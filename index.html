@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CNC PRO Tool</title>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f5f5f5;
+}
+
+.container {
+    max-width: 420px;
+    margin: auto;
+    padding: 10px;
+}
+
+.card {
+    background: white;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+button {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.result {
+    background: #eee;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.code {
+    border-bottom: 1px solid #ddd;
+    padding: 6px;
+}
+
+.small {
+    font-size: 12px;
+    color: gray;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGO -->
+<div style="text-align:center">
+    <img src="All-Steel_web.png" style="max-height:60px">
+    <div>Tool</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+    <button onclick="showTab('calc')">Calc</button>
+    <button onclick="showTab('zero')">Zero</button>
+    <button onclick="showTab('g')">G</button>
+</div>
+
+<!-- CALC -->
+<div id="calc" class="card">
+
+<img src="tool.gif" style="max-height:120px; display:block; margin:auto;">
+
+<label><b>Diameter (mm)</b>
+    <input id="diameter" type="number" value="10">
+</label>
+
+<label><b>Materiale</b>
+    <select id="material" onchange="updateVC()">
+        <option value="stål">Stål</option>
+        <option value="rustfri">Rustfri</option>
+        <option value="alu">Aluminium</option>
+        <option value="jern">Jern</option>
+    </select>
+</label>
+
+<label><b>Værktøjstype</b>
+    <select id="tool" onchange="updateVC()">
+        <option value="HM">HM (Hårdmetal)</option>
+        <option value="HSS">HSS</option>
+    </select>
+</label>
+
+<label><b>Skærehastighed vc (m/min)</b>
+    <input id="vc" type="number">
+</label>
+<div class="small">Automatisk forslag – kan ændres</div>
+
+<label><b>Antal tænder (z)</b>
+    <input id="teeth" type="number" value="4">
+</label>
+
+<label><b>Feed pr tand fz (mm)</b>
+    <input id="fz" type="number" step="0.01" value="0.05">
+</label>
+
+<div class="result">
+    <b>RPM:</b> <span id="rpm"></span><br>
+    <b>Feed:</b> <span id="feed"></span>
+</div>
+
+</div>
+
+<!-- ZERO -->
+<div id="zero" class="card" style="display:none">
+
+<p><b>Punkt 1:</b> Mål første side af emnet</p>
+<p><b>Punkt 2:</b> Mål modsatte side</p>
+
+<input id="m1" type="number" placeholder="Måling 1">
+<input id="m2" type="number" placeholder="Måling 2">
+
+<div class="result">
+    <b>Nulpunkt:</b> <span id="zeroRes"></span>
+</div>
+
+</div>
+
+<!-- G CODE -->
+<div id="g" class="card" style="display:none">
+
+<input id="search" placeholder="Søg G kode" onkeyup="filterCodes()">
+
+<div id="list"></div>
+
+<div id="detail" class="result"></div>
+
+</div>
+
+</div>
+
+<script>
+
+// VC tabel
+const vcTable = {
+    stål: { HM:150, HSS:30 },
+    rustfri: { HM:80, HSS:20 },
+    alu: { HM:300, HSS:80 },
+    jern: { HM:120, HSS:25 }
+};
+
+// G-koder
+const gCodes = [
+    { code:"G83", desc:"Peck boring", detail:"X Y Z R Q F\nQ = step ned (dybde pr stik)" },
+    { code:"G81", desc:"Simpel boring", detail:"X Y Z R F" },
+    { code:"G82", desc:"Boring med dwell", detail:"X Y Z R P F" }
+];
+
+// Tabs
+function showTab(name){
+    document.getElementById("calc").style.display="none";
+    document.getElementById("zero").style.display="none";
+    document.getElementById("g").style.display="none";
+    document.getElementById(name).style.display="block";
+}
+
+// Auto VC
+function updateVC(){
+    let mat = document.getElementById("material").value;
+    let tool = document.getElementById("tool").value;
+    document.getElementById("vc").value = vcTable[mat][tool];
+}
+
+// Beregning loop
+setInterval(()=>{
+    let d = parseFloat(document.getElementById("diameter").value);
+    let vc = parseFloat(document.getElementById("vc").value);
+    let z = parseFloat(document.getElementById("teeth").value);
+    let fz = parseFloat(document.getElementById("fz").value);
+
+    if(d && vc){
+        let rpm = Math.round((vc*1000)/(Math.PI*d));
+        let feed = Math.round(rpm*z*fz);
+
+        document.getElementById("rpm").innerText = rpm;
+        document.getElementById("feed").innerText = feed;
+    }
+
+    let m1 = parseFloat(document.getElementById("m1").value);
+    let m2 = parseFloat(document.getElementById("m2").value);
+
+    if(m1 && m2){
+        document.getElementById("zeroRes").innerText = ((m1+m2)/2).toFixed(3);
+    }
+
+},200);
+
+// G-koder
+function filterCodes(){
+    let q = document.getElementById("search").value.toLowerCase();
+    let list = document.getElementById("list");
+    list.innerHTML="";
+
+    gCodes.forEach(g=>{
+        if(g.code.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q)){
+            let div = document.createElement("div");
+            div.className="code";
+            div.innerText = g.code + " - " + g.desc;
+
+            div.onclick = ()=>{
+                document.getElementById("detail").innerText =
+                    g.code + "\n" + g.desc + "\n" + g.detail;
+            };
+
+            list.appendChild(div);
+        }
+    });
+}
+
+// init
+updateVC();
+filterCodes();
+
+</script>
+
+</body>
+</html>
