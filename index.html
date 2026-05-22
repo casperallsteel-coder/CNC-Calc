@@ -473,39 +473,135 @@ const codes = [
 
 // Anilam Crusader Series-ML koder
 const anilam = [
-    // G-koder
-    { type:"g", code:"G00", desc:"Rapid Positioning", detail:"ANILAM CRUSADER-ML\n\nHurtig positionering uden skæring.\nForflyttelse til næste værktøjsposition\nmed maksimal hastighed.\n\nSyntaks: G00 X__ Y__ Z__\n\nEksempel: G00 X100 Y50 Z10\n(Hurtig gang til position X100, Y50, Z10)" },
-    { type:"g", code:"G01", desc:"Linear Interpolation", detail:"ANILAM CRUSADER-ML\n\nLineær interpolation med konstant\nfremfødshastighed.\n\nSyntaks: G01 X__ Y__ Z__ F__\n\nEksempel: G01 X50 Y25 Z5 F200\n(Lineær bevægelse med fremfødning 200 mm/min)" },
-    { type:"g", code:"G02", desc:"Circular CW", detail:"ANILAM CRUSADER-ML\n\nCirkulær interpolation med uret.\nDefiner centerpunkt med I og J.\n\nSyntaks: G02 X__ Y__ I__ J__ F__\n\nEksempel: G02 X100 Y100 I50 J50 F150\n(CW bue fra punkt til (100,100) med centrum på (50,50))" },
-    { type:"g", code:"G03", desc:"Circular CCW", detail:"ANILAM CRUSADER-ML\n\nCirkulær interpolation mod uret.\nDefiner centerpunkt med I og J.\n\nSyntaks: G03 X__ Y__ I__ J__ F__\n\nEksempel: G03 X100 Y100 I50 J50 F150\n(CCW bue fra punkt til (100,100) med centrum på (50,50))" },
-    { type:"g", code:"G04", desc:"Dwell (Pause)", detail:"ANILAM CRUSADER-ML\n\nPause/dwell i programmet.\nVentetid i sekunder.\n\nSyntaks: G04 P__\n\nEksempel: G04 P2\n(Pause i 2 sekunder)" },
-    { type:"g", code:"G33", desc:"Electronic Threading", detail:"ANILAM CRUSADER-ML\n\nElektronisk gevindskæring.\nBrugt til præcis gevindproduktion.\n\nSyntaks: G33 X__ Z__ K__\n\nK = gevindstigning\nEksempel: G33 X15 Z50 K1.5\n(Gevind med stigning 1.5 mm)" },
-    { type:"g", code:"G40", desc:"Cutter Comp Cancel", detail:"ANILAM CRUSADER-ML\n\nAnnuller værktøjsradius kompensation.\n\nSyntaks: G40\n\nAlltid slut med denne for at annullere\nradius kompensation før programslut." },
-    { type:"g", code:"G41", desc:"Cutter Comp Left", detail:"ANILAM CRUSADER-ML\n\nVærktøjsradius kompensation VENSTRE.\nDer skal være værktøj defineret i offsettabel.\n\nSyntaks: G41 D__\n\nEksempel: G41 D01\n(Venstre kompensation med værktøj 01)" },
-    { type:"g", code:"G42", desc:"Cutter Comp Right", detail:"ANILAM CRUSADER-ML\n\nVærktøjsradius kompensation HØJRE.\nDer skal være værktøj defineret i offsettabel.\n\nSyntaks: G42 D__\n\nEksempel: G42 D02\n(Højre kompensation med værktøj 02)" },
-    { type:"g", code:"G70", desc:"Finishing Cycle", detail:"ANILAM CRUSADER-ML\n\nFinishing cyklus.\nEfterfølges af formcyklus.\n\nSyntaks: G70 P__ Q__\n\nP = første blok\nQ = sidste blok\nEksempel: G70 P10 Q20" },
-    { type:"g", code:"G71", desc:"Stock Removal", detail:"ANILAM CRUSADER-ML\n\nGrovbearbejdning med automatisk\nemnedeling.\n\nSyntaks: G71 P__ Q__ U__ W__\n\nU = X-retning tillæg\nW = Z-retning tillæg" },
-    { type:"g", code:"G90", desc:"Absolute Positioning", detail:"ANILAM CRUSADER-ML\n\nAbsolutkoordinater.\nKoordinaterne er fra maskinens\nnulpunkt.\n\nSyntaks: G90 (modal - påvirker alt efter)" },
-    { type:"g", code:"G91", desc:"Incremental Positioning", detail:"ANILAM CRUSADER-ML\n\nRelative koordinater.\nKoordinaterne er fra aktuel position.\n\nSyntaks: G91 (modal - påvirker alt efter)" },
-    { type:"g", code:"G92", desc:"Set Position", detail:"ANILAM CRUSADER-ML\n\nDefinerer nuværende position som\nde angivne værdier.\n\nSyntaks: G92 X__ Z__\n\nEksempel: G92 X0 Z0\n(Sætter aktuel position som 0,0)" },
-    { type:"g", code:"G94", desc:"Feed/Minute Mode", detail:"ANILAM CRUSADER-ML\n\nFremfødning i mm/minut.\nStandard fremfødningstype.\n\nSyntaks: G94 F__\n\nEksempel: G94 F200\n(Fremfødning 200 mm/min)" },
-    { type:"g", code:"G95", desc:"Feed/Revolution", detail:"ANILAM CRUSADER-ML\n\nFremfødning pr. omdrejning (mm/rev).\nBruges ved gevindskæring.\n\nSyntaks: G95 F__\n\nEksempel: G95 F0.5\n(Fremfødning 0.5 mm pr. omdrejning)" },
 
-    // AUX Functions
-    { type:"aux", code:"M03", desc:"Spindel Start CW", detail:"ANILAM CRUSADER-ML - AUX FUNCTION\n\nStarter spindel med urets retning.\nMed speed værdi.\n\nSyntaks: M03 S__\n\nS = RPM\nEksempel: M03 S1200\n(Start spindel 1200 RPM med uret)" },
-    { type:"aux", code:"M04", desc:"Spindel Start CCW", detail:"ANILAM CRUSADER-ML - AUX FUNCTION\n\nStarter spindel mod urets retning.\nMed speed værdi.\n\nSyntaks: M04 S__\n\nS = RPM\nEksempel: M04 S1000\n(Start spindel 1000 RPM mod uret)" },
-    { type:"aux", code:"M05", desc:"Spindel Stop", detail:"ANILAM CRUSADER-ML - AUX FUNCTION\n\nStopper spindelrotation.\n\nSyntaks: M05\n\nAlleredie tilrådede før værktøjsbytning" },
-    { type:"aux", code:"M08", desc:"Coolant ON", detail:"ANILAM CRUSADER-ML - AUX FUNCTION\n\nTænder kølevæske.\n\nSyntaks: M08\n\nAnvendes typisk før skæring" },
-    { type:"aux", code:"M09", desc:"Coolant OFF", detail:"ANILAM CRUSADER-ML - AUX FUNCTION\n\nSlukker kølevæske.\n\nSyntaks: M09\n\nAnvendes ved programslut" },
-    { type:"aux", code:"M10", desc:"Tailstock Clamp", detail:"ANILAM CRUSADER-ML - AUX FUNCTION\n\nSpænder løbespids (hvis installeret).\n\nSyntaks: M10\n\nSikrer emne under bearbejdning" },
-    { type:"aux", code:"M11", desc:"Tailstock Release", detail:"ANILAM CRUSADER-ML - AUX FUNCTION\n\nLøsner løbespids.\n\nSyntaks: M11\n\nFor fjernelse af emne" },
-    { type:"aux", code:"M30", desc:"Program End/Reset", detail:"ANILAM CRUSADER-ML - AUX FUNCTION\n\nProgram slut med reset.\nAnnullerer alle modale funktioner.\n\nSyntaks: M30\n\nAnvendes ved programslut" },
-    { type:"aux", code:"M99", desc:"Subprogram Return", detail:"ANILAM CRUSADER-ML - AUX FUNCTION\n\nVender tilbage fra subprogram til\nhoved program.\n\nSyntaks: M99\n\nAnvendes ved subprogram slut" },
+/* ================= BORECYKLUS ================= */
 
-    // ARC Help
-    { type:"arc", code:"G02 CW", desc:"Circular Clockwise", detail:"ANILAM CRUSADER-ML - ARC HELP\n\nCIRKULÆR INTERPOLATION - MED URET\n\nParametre:\n- X__ = slutpunkt X-koordinat\n- Y__ = slutpunkt Y-koordinat\n- I__ = center X-afstand (fra start)\n- J__ = center Y-afstand (fra start)\n- F__ = fremfødning\n\nEksempel:\nG02 X50 Y30 I25 J15 F100\n\nForklaring:\nBue fra aktuelt punkt til (50,30)\nmed centerpunkt offset I25, J15\n\nTIP: I og J er RELATIVE fra startpunkt!" },
-    { type:"arc", code:"G03 CCW", desc:"Circular Counter-Clockwise", detail:"ANILAM CRUSADER-ML - ARC HELP\n\nCIRKULÆR INTERPOLATION - MOD URET\n\nParametre:\n- X__ = slutpunkt X-koordinat\n- Y__ = slutpunkt Y-koordinat\n- I__ = center X-afstand (fra start)\n- J__ = center Y-afstand (fra start)\n- F__ = fremfødning\n\nEksempel:\nG03 X50 Y30 I25 J15 F100\n\nForklaring:\nBue fra aktuelt punkt til (50,30)\nmed centerpunkt offset I25, J15\nretning MODURET\n\nTIP: I og J er RELATIVE fra startpunkt!" },
-    { type:"arc", code:"ARC Tips", desc:"Cirkulær interpolation tips", detail:"ANILAM CRUSADER-ML - ARC TIPS\n\nVIGTIGE REGLER FOR BUER:\n\n1. STARTPUNKT\n   - Dit aktuelle værktøjspunkt\n   - Skal have samme radius fra\n     centerpunkt som slutpunkt!\n\n2. CENTERPUNKT (I, J)\n   - RELATIVT fra startpunkt\n   - IKKE absolutte koordinater\n   - I = X-offset fra start\n   - J = Y-offset fra start\n\n3. EKSEMPEL:\n   Start: X0 Y0\n   Center offset: I50 J50\n   Center er på: X50 Y50\n   Slutpunkt: X50 Y100\n\n4. RETNING:\n   G02 = Clockwise (med uret)\n   G03 = Counter-clockwise (mod uret)\n\n5. FEJLFINDING:\n   - Hvis radius ikke matcher:\n     Fejl i startpunkt eller center!\n   - Hvis bue går forkert vej:\n     Byt mellem G02 og G03" }
+{ type:"g", group:"bore", code:"G81", desc:"Standard boring", detail:
+`✔ Standard borecyklus
+
+Parametre:
+X Y = position
+Z = dybde
+R = sikker højde
+F = feed
+
+TIP:
+Bruges til almindelig boring uden aflastning.` },
+
+{ type:"g", group:"bore", code:"G83", desc:"Peck boring", detail:
+`✔ Spånbrydende boring
+
+Parametre:
+X Y Z R Q F
+Q = step ned
+
+TIP:
+Brug til dybe huller for bedre spånafgang.` },
+
+/* ================= FRÆSNING ================= */
+
+{ type:"g", group:"mill", code:"G75", desc:"Rammefræsning", detail:
+`✔ Fræser firkantet ramme automatisk
+
+V parametre:
+V40 = start højde
+V41 = længde X
+V42 = bredde Y
+V43 = dybde
+V45 = overlap
+
+TIP:
+Sparer rigtig meget programmering ved lommer.` },
+
+{ type:"g", group:"mill", code:"G77", desc:"Cirkulær lomme", detail:
+`✔ Rund lomme
+
+V41 = center X
+V42 = center Y
+V44 = diameter
+
+TIP:
+Perfekt til leje sæder.` },
+
+{ type:"g", group:"mill", code:"G78", desc:"Rektangulær lomme", detail:
+`✔ Firkantet lomme
+
+V41 = længde
+V42 = bredde
+V43 = dybde
+
+TIP:
+Overlap < 70% af værktøj` },
+
+/* ================= GEOMETRI ================= */
+
+{ type:"g", group:"geo", code:"G05", desc:"Ellipse", detail:
+`✔ Fræser ellipse automatisk
+
+V02 = center X
+V03 = center Y
+V06 = længde
+V07 = bredde
+
+TIP:
+Indbygget kompensation – nem at bruge.` },
+
+{ type:"g", group:"geo", code:"G06", desc:"Spiral", detail:
+`✔ Spiral fræsning
+
+V06 = Z bevægelse
+V07 = antal omgange
+
+TIP:
+God til hulfræsning.` },
+
+/* ================= POLÆR ================= */
+
+{ type:"g", group:"polar", code:"G10", desc:"Polær rapid", detail:
+`✔ Polar positionering
+
+V14 = radius
+V15 = vinkel
+
+TIP:
+Undgår XY beregning` },
+
+{ type:"g", group:"polar", code:"G13", desc:"Polær interpolation", detail:
+`✔ Polar bevægelse med feed
+
+TIP:
+Super til cirkel bevægelser uden I/J` },
+
+/* ================= TRANSFORM ================= */
+
+{ type:"g", group:"transform", code:"G51", desc:"Rotation", detail:
+`✔ Roterer program
+
+V11 V12 = center
+V15 = vinkel
+
+TIP:
+Brug til bolt mønstre.` },
+
+{ type:"g", group:"transform", code:"G53", desc:"Skalering", detail:
+`✔ Skalerer program
+
+V16 V17 = faktor
+
+TIP:
+Hurtig ændring af størrelse.` },
+
+/* ================= AUX ================= */
+
+{ type:"aux", group:"aux", code:"AUX 0003", desc:"Spindel CW", detail:
+`Starter spindel med uret` },
+
+{ type:"aux", group:"aux", code:"AUX 0006", desc:"Coolant ON", detail:
+`Kølervæske til` },
+
+{ type:"aux", group:"aux", code:"AUX 9033", desc:"Rotation Z", detail:
+`Rotere program i Z plan` }
+
 ];
 
 let currentFilter = "all";
