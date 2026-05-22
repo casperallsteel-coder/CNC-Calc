@@ -720,15 +720,13 @@ function filterAnilam_Codes(){
     let detailDiv = document.getElementById("anilam-detail");
 
     anilam.forEach(a=>{
-        // Filter by type
-        if(currentAnilam !== "all" && a.type !== currentAnilam) return;
+        if(currentAnilam !== "all" && a.group !== currentAnilam) return;
 
-        // Filter by search
         if(q && !a.code.toLowerCase().includes(q) && !a.desc.toLowerCase().includes(q)) return;
 
         let div = document.createElement("div");
         div.className="code";
-        div.innerText = a.code + " - " + a.desc;
+        div.innerHTML = `<b>${a.code}</b> - ${a.desc}`;
 
         div.onclick = ()=>{
             detailDiv.innerText = a.code + " - " + a.desc + "\n\n" + a.detail;
