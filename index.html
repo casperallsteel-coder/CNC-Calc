@@ -49,16 +49,45 @@ button {
     background: #eee;
     padding: 10px;
     font-size: 14px;
+    white-space: pre-wrap;
+    font-family: monospace;
 }
 
 .code {
     border-bottom: 1px solid #ddd;
     padding: 6px;
+    cursor: pointer;
+}
+
+.code:hover {
+    background: #f9f9f9;
 }
 
 .small {
     font-size: 12px;
     color: gray;
+}
+
+.code-filter {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+
+.code-filter button {
+    flex: 1;
+    padding: 8px;
+    font-size: 12px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.code-filter button.active {
+    background: #0366d6;
+    color: white;
+    border-color: #0366d6;
 }
 </style>
 </head>
@@ -77,7 +106,7 @@ button {
 <div class="tabs">
     <button onclick="showTab('calc')">Calc</button>
     <button onclick="showTab('zero')">Zero</button>
-    <button onclick="showTab('g')">G</button>
+    <button onclick="showTab('g')">G/M Koder</button>
 </div>
 
 <!-- CALC -->
@@ -140,10 +169,16 @@ button {
 
 </div>
 
-<!-- G CODE -->
+<!-- G/M CODE -->
 <div id="g" class="card" style="display:none">
 
-<input id="search" placeholder="Søg G kode" onkeyup="filterCodes()">
+<input id="search" placeholder="Søg kode" onkeyup="filterCodes()">
+
+<div class="code-filter">
+    <button class="active" onclick="filterByType('all')">Alle</button>
+    <button onclick="filterByType('g')">G-koder</button>
+    <button onclick="filterByType('m')">M-koder</button>
+</div>
 
 <div id="list"></div>
 
@@ -163,12 +198,66 @@ const vcTable = {
     jern: { HM:120, HSS:25 }
 };
 
-// G-koder
-const gCodes = [
-    { code:"G83", desc:"Peck boring", detail:"X Y Z R Q F\nQ = step ned (dybde pr stik)" },
-    { code:"G81", desc:"Simpel boring", detail:"X Y Z R F" },
-    { code:"G82", desc:"Boring med dwell", detail:"X Y Z R P F" }
+// G-koder og M-koder
+const codes = [
+    // G-koder
+    { type:"g", code:"G00", desc:"Hurtig positionering", detail:"Lineær hurtig bevægelse uden skæring\nSyntaks: G00 X Y Z" },
+    { type:"g", code:"G01", desc:"Lineær interpolation", detail:"Lineær bevægelse med skæring\nSyntaks: G01 X Y Z F" },
+    { type:"g", code:"G02", desc:"Cirkulær CW", detail:"Cirkulær bevægelse med ur\nSyntaks: G02 X Y I J F" },
+    { type:"g", code:"G03", desc:"Cirkulær CCW", detail:"Cirkulær bevægelse mod ur\nSyntaks: G03 X Y I J F" },
+    { type:"g", code:"G04", desc:"Dwell", detail:"Pause i programmet\nSyntaks: G04 P[tid ms]" },
+    { type:"g", code:"G17", desc:"XY plan", detail:"Vælger XY plan til cirkler" },
+    { type:"g", code:"G18", desc:"ZX plan", detail:"Vælger ZX plan til cirkler" },
+    { type:"g", code:"G19", desc:"YZ plan", detail:"Vælger YZ plan til cirkler" },
+    { type:"g", code:"G20", desc:"Tommer (inch)", detail:"Programmet kører i tommer" },
+    { type:"g", code:"G21", desc:"Millimeter", detail:"Programmet kører i millimeter" },
+    { type:"g", code:"G28", desc:"Home", detail:"Kører til maskinens nulpunkt\nSyntaks: G28 X Y Z" },
+    { type:"g", code:"G40", desc:"Ingen kompensation", detail:"Værktøjsradius uden kompensation" },
+    { type:"g", code:"G41", desc:"Radius komp venstre", detail:"Værktøjsradius kompensation venstre\nSyntaks: G41 D[værktøj nummer]" },
+    { type:"g", code:"G42", desc:"Radius komp højre", detail:"Værktøjsradius kompensation højre\nSyntaks: G42 D[værktøj nummer]" },
+    { type:"g", code:"G43", desc:"Længde kompensation +", detail:"Værktøjslængde kompensation plus\nSyntaks: G43 H[værktøj nummer] Z" },
+    { type:"g", code:"G49", desc:"Ingen længde komp", detail:"Værktøjslængde uden kompensation" },
+    { type:"g", code:"G54-G59", desc:"Arbejdskoordinat", detail:"Vælger arbejdskoordinatsystem 1-6" },
+    { type:"g", code:"G65", desc:"Makro kald", detail:"Kalder makrounderprogrammer" },
+    { type:"g", code:"G70", desc:"Finish cyklus", detail:"Finishing af boring eller gevind" },
+    { type:"g", code:"G71", desc:"Roughing cyklus", detail:"Grovbearbejdning med emnedeling" },
+    { type:"g", code:"G80", desc:"Annuller boring", detail:"Annullerer alle borings cyklusser" },
+    { type:"g", code:"G81", desc:"Simpel boring", detail:"Fast boring\nSyntaks: G81 X Y Z R F" },
+    { type:"g", code:"G82", desc:"Boring med dwell", detail:"Boring med pause\nSyntaks: G82 X Y Z R P F" },
+    { type:"g", code:"G83", desc:"Peck boring", detail:"Boring med chips fjernelse\nQ = dybde pr stik\nSyntaks: G83 X Y Z R Q F" },
+    { type:"g", code:"G84", desc:"Gevind boring", detail:"Gevind skæring ved boring\nSyntaks: G84 X Y Z R F" },
+    { type:"g", code:"G85", desc:"Boring med retræk", detail:"Boring med hurtigt retræk\nSyntaks: G85 X Y Z R F" },
+    { type:"g", code:"G90", desc:"Absolut koordinat", detail:"Koordinater som absolutte værdier" },
+    { type:"g", code:"G91", desc:"Relativ koordinat", detail:"Koordinater som relative værdier" },
+    { type:"g", code:"G92", desc:"Set position", detail:"Definerer nuværende position\nSyntaks: G92 X Y Z" },
+    { type:"g", code:"G94", desc:"Feed mm/min", detail:"Feed i mm/min" },
+    { type:"g", code:"G95", desc:"Feed per omdrejning", detail:"Feed som mm/omdrejning" },
+    { type:"g", code:"G98", desc:"Retræk til R plan", detail:"Retræk til R værdi efter boring" },
+    { type:"g", code:"G99", desc:"Retræk til start", detail:"Retræk til Z værdi fra start" },
+
+    // M-koder
+    { type:"m", code:"M00", desc:"Pause", detail:"Program pause - manuel genstart" },
+    { type:"m", code:"M01", desc:"Betinget pause", detail:"Valgfri pause hvis knap er aktiveret" },
+    { type:"m", code:"M02", desc:"Program slut", detail:"Afslutter program uden reset" },
+    { type:"m", code:"M03", desc:"Spindel CW", detail:"Spindel rotation med uret\nSyntaks: M03 S[RPM]" },
+    { type:"m", code:"M04", desc:"Spindel CCW", detail:"Spindel rotation mod uret\nSyntaks: M04 S[RPM]" },
+    { type:"m", code:"M05", desc:"Spindel stop", detail:"Stanser spindelrotation" },
+    { type:"m", code:"M06", desc:"Værktøjsbyt", detail:"Pauserer for manuel værktøjsbytning\nSyntaks: M06 T[værktøj nummer]" },
+    { type:"m", code:"M07", desc:"Køler 2", detail:"Aktiverer anden kølervæske" },
+    { type:"m", code:"M08", desc:"Køler 1", detail:"Aktiverer primær kølervæske" },
+    { type:"m", code:"M09", desc:"Køler stop", detail:"Stoppper al kølervæske" },
+    { type:"m", code:"M10", desc:"Emne spænding", detail:"Spænder emnet" },
+    { type:"m", code:"M11", desc:"Emne løsning", detail:"Løsner emnet" },
+    { type:"m", code:"M13", desc:"Spindel + køler", detail:"Spindel CW og køler på\nSyntaks: M13 S[RPM]" },
+    { type:"m", code:"M14", desc:"Spindel CCW + køler", detail:"Spindel CCW og køler på" },
+    { type:"m", code:"M19", desc:"Spindel orientering", detail:"Orienterer spindel til position" },
+    { type:"m", code:"M21", desc:"Emne skifter", detail:"Automatisk emne skifter" },
+    { type:"m", code:"M30", desc:"Program slut", detail:"Afslutter program og resets" },
+    { type:"m", code:"M98", desc:"Subprogram kald", detail:"Kalder subprogram\nSyntaks: M98 P[program nr]" },
+    { type:"m", code:"M99", desc:"Subprogram slut", detail:"Afslutter subprogram og vender tilbage" }
 ];
+
+let currentFilter = "all";
 
 // Tabs
 function showTab(name){
@@ -209,25 +298,41 @@ setInterval(()=>{
 
 },200);
 
-// G-koder
+// Filter by type
+function filterByType(type){
+    currentFilter = type;
+    
+    // Update active button
+    document.querySelectorAll(".code-filter button").forEach(btn => {
+        btn.classList.remove("active");
+    });
+    event.target.classList.add("active");
+    
+    filterCodes();
+}
+
+// Koder filter
 function filterCodes(){
     let q = document.getElementById("search").value.toLowerCase();
     let list = document.getElementById("list");
     list.innerHTML="";
 
-    gCodes.forEach(g=>{
-        if(g.code.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q)){
-            let div = document.createElement("div");
-            div.className="code";
-            div.innerText = g.code + " - " + g.desc;
+    codes.forEach(c=>{
+        // Filter by type
+        if(currentFilter !== "all" && c.type !== currentFilter) return;
 
-            div.onclick = ()=>{
-                document.getElementById("detail").innerText =
-                    g.code + "\n" + g.desc + "\n" + g.detail;
-            };
+        // Filter by search
+        if(q && !c.code.toLowerCase().includes(q) && !c.desc.toLowerCase().includes(q)) return;
 
-            list.appendChild(div);
-        }
+        let div = document.createElement("div");
+        div.className="code";
+        div.innerText = c.code + " - " + c.desc;
+
+        div.onclick = ()=>{
+            document.getElementById("detail").innerText = c.code + " - " + c.desc + "\n\n" + c.detail;
+        };
+
+        list.appendChild(div);
     });
 }
 
