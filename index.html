@@ -77,6 +77,31 @@ input, select {
     padding:10px;
     white-space:pre-wrap;
     word-break: break-word;
+    margin-bottom: 10px;
+}
+
+.info-box {
+    background:#fff3cd;
+    border: 1px solid #ffc107;
+    padding:10px;
+    font-size:12px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.info-box b {
+    display: block;
+    margin-bottom: 8px;
+    color: #d39e00;
+}
+
+.formula {
+    background: white;
+    padding: 8px;
+    margin: 5px 0;
+    border-left: 3px solid #0366d6;
+    font-family: monospace;
+    font-size: 11px;
 }
 
 .code {
@@ -170,6 +195,21 @@ input, select {
 <div class="result">
 RPM: <span id="rpm"></span><br>
 Feed: <span id="feed"></span> mm/min
+</div>
+
+<div class="info-box">
+<b>📚 Sådan beregnes værdierne:</b>
+
+<b>RPM (Spindelhastigheid):</b>
+<div class="formula">RPM = (VC × 1000) / (π × Diameter)</div>
+VC er skærehastigheden (m/min), som afhænger af materiale og værktøjstype.
+
+<b>Feed (Fremførsel):</b>
+<div class="formula">Feed = RPM × Tænder × fz</div>
+fz er fremførselen per tand (mm/tand), som du kan vælge ud fra ønsket overfladekvalitet.
+
+<b>Eksempel:</b>
+Hvis du borer en Ø10 mm hul i rustfrit stål med HM værktøj får du automatisk de rigtige værdier!
 </div>
 
 </div>
