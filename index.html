@@ -84,19 +84,6 @@ input, select {
     display:none;
 }
 
-.filter-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 10px;
-}
-
-.filter-buttons button {
-    flex: 0 1 calc(50% - 3px);
-    padding: 8px;
-    font-size: 12px;
-}
-
 .list-container {
     max-height: 300px;
     overflow-y: auto;
@@ -172,24 +159,10 @@ Nul: <span id="zeroRes"></span>
 
 <div class="help-box">
 <b>Fanuc G/M Koder</b><br><br>
-Søg eller filtrer efter type for at finde ønskede koder med beskrivelse.
+Søg efter ønskede koder med beskrivelse.
 </div>
 
 <input id="searchG" placeholder="Søg..." onkeyup="showGCodes()">
-
-<div class="filter-buttons">
-<button onclick="setGFilter('all')">Alle</button>
-<button onclick="setGFilter('rapid')">Hurtig løb</button>
-<button onclick="setGFilter('linear')">Lineær</button>
-<button onclick="setGFilter('arc')">Cirkulær</button>
-<button onclick="setGFilter('drilling')">Boring</button>
-<button onclick="setGFilter('canned')">Cyklus</button>
-<button onclick="setGFilter('offset')">Offset</button>
-<button onclick="setGFilter('spindle')">Spindel</button>
-<button onclick="setGFilter('tool')">Værktøj</button>
-<button onclick="setGFilter('plane')">Plan</button>
-<button onclick="setGFilter('other')">Øvrigt</button>
-</div>
 
 <div class="list-container">
 <div id="glist"></div>
@@ -213,17 +186,7 @@ V03 0<br>
 G05
 </div>
 
-<input id="searchA" placeholder="Søg..." onkeyup="showAnilam()">
-
-<div class="filter-buttons">
-<button onclick="setFilter('all')">Alle</button>
-<button onclick="setFilter('v')">V-koder</button>
-<button onclick="setFilter('bore')">Bore</button>
-<button onclick="setFilter('mill')">Fræs</button>
-<button onclick="setFilter('geo')">Geo</button>
-<button onclick="setFilter('polar')">Polær</button>
-<button onclick="setFilter('aux')">AUX</button>
-</div>
+<input id="searchA" placeholder="Søg...">
 
 <div id="alist"></div>
 <div id="detail" class="result"></div>
@@ -331,24 +294,13 @@ const anilam = [
   {type:"aux",group:"aux",code:"AUX 0003",desc:"Spindel",detail:"Start"}
 ];
 
-// FILTER - G CODES
-let gFilter = "all";
-let gSearch = "";
-
-function setGFilter(f) {
-  gFilter = f;
-  showGCodes();
-}
-
+// G CODES - SEARCH
 function showGCodes() {
-  gSearch = document.getElementById("searchG").value.toUpperCase();
+  let gSearch = document.getElementById("searchG").value.toUpperCase();
   let list = document.getElementById("glist");
   list.innerHTML = "";
 
   gCodes.forEach(g => {
-    // Filter by category
-    if (gFilter !== "all" && g.category !== gFilter) return;
-
     // Filter by search
     if (gSearch && !g.code.includes(gSearch) && !g.desc.toUpperCase().includes(gSearch) && !g.detail.toUpperCase().includes(gSearch)) return;
 
@@ -365,21 +317,13 @@ function showGCodes() {
   });
 }
 
-// FILTER - ANILAM
-let filter = "all";
-
-function setFilter(f) {
-  filter = f;
-  showAnilam();
-}
-
+// ANILAM - SEARCH
 function showAnilam() {
   let searchText = document.getElementById("searchA").value.toUpperCase();
   let list = document.getElementById("alist");
   list.innerHTML = "";
 
   anilam.forEach(a => {
-    if (filter !== "all" && a.group !== filter) return;
     if (searchText && !a.code.includes(searchText) && !a.desc.toUpperCase().includes(searchText)) return;
 
     let d = document.createElement("div");
@@ -435,6 +379,10 @@ function showTab(t) {
   // Initialize when opening g tab
   if (t === "g") {
     showGCodes();
+  }
+  // Initialize when opening anilam tab
+  if (t === "anilam") {
+    showAnilam();
   }
 }
 
