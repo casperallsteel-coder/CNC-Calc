@@ -113,10 +113,9 @@ input, select {
 <!-- CALC -->
 <div id="calc">
 
-<input id="diameter" value="10" placeholder="Diameter">
+<input id="diameter" value="10" placeholder="Diameter (mm)">
 
 <select id="material" onchange="updateVC()">
-<option value="stål">Stål</option>
 <option value="rustfri">Rustfri</option>
 <option value="alu">Alu</option>
 <option value="jern">Jern</option>
@@ -127,14 +126,14 @@ input, select {
 <option value="HSS">HSS</option>
 </select>
 
-<input id="vc" placeholder="vc">
+<input id="vc" placeholder="vc (m/min)">
 
-<input id="teeth" value="4">
-<input id="fz" value="0.05">
+<input id="teeth" value="4" placeholder="Tænder">
+<input id="fz" value="0.05" placeholder="fz (mm/tand)">
 
 <div class="result">
 RPM: <span id="rpm"></span><br>
-Feed: <span id="feed"></span>
+Feed: <span id="feed"></span> mm/min
 </div>
 
 </div>
@@ -340,7 +339,6 @@ function showAnilam() {
 
 // CALC
 const vcTable = {
-  stål: {HM: 150, HSS: 30},
   rustfri: {HM: 80, HSS: 20},
   alu: {HM: 300, HSS: 80},
   jern: {HM: 120, HSS: 25}
