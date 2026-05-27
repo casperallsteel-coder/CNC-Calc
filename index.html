@@ -7,140 +7,27 @@
 <title>CNC PRO Tool</title>
 
 <style>
-body {
-    font-family: Arial;
-    margin: 0;
-    background: #f5f5f5;
-}
-
-.header {
-    background: #0366d6;
-    color: white;
-    padding: 10px;
-    text-align: center;
-}
-
-.header img {
-    max-height: 60px;
-    display: block;
-    margin: auto;
-}
-
-.header h1 {
-    margin-top: 6px;
-    font-size: 18px;
-}
-
-.container {
-    max-width: 420px;
-    margin: auto;
-    padding: 10px;
-}
-
-.tabs {
-    display:flex;
-    gap:5px;
-    margin-bottom:10px;
-}
-
-button {
-    flex:1;
-    padding:10px;
-}
-
-input, select {
-    width:100%;
-    padding:10px;
-    margin-bottom:8px;
-    box-sizing: border-box;
-}
-
-.input-group {
-    margin-bottom: 8px;
-}
-
-.input-group label {
-    display: block;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 4px;
-    color: #333;
-}
-
-.input-group input,
-.input-group select {
-    margin-bottom: 0;
-}
-
-.result {
-    background:#eee;
-    padding:10px;
-    white-space:pre-wrap;
-    word-break: break-word;
-    margin-bottom: 10px;
-}
-
-.info-box {
-    background:#fff3cd;
-    border: 1px solid #ffc107;
-    padding:10px;
-    font-size:12px;
-    line-height: 1.6;
-    margin-bottom: 10px;
-}
-
-.info-box b {
-    display: block;
-    margin-bottom: 8px;
-    color: #d39e00;
-}
-
-.formula {
-    background: white;
-    padding: 8px;
-    margin: 5px 0;
-    border-left: 3px solid #0366d6;
-    font-family: monospace;
-    font-size: 11px;
-}
-
-.code {
-    border-bottom:1px solid #ddd;
-    padding:8px;
-    cursor:pointer;
-    background: white;
-}
-
-.code:hover {
-    background: #f9f9f9;
-}
-
-.help-box {
-    background:#eef6ff;
-    padding:10px;
-    font-size:13px;
-    margin-bottom:10px;
-}
-
-.hide {
-    display:none;
-}
-
-.list-container {
-    max-height: 300px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-}
+body {font-family: Arial; margin:0; background:#f5f5f5;}
+.header {background:#0366d6; color:white; padding:10px; text-align:center;}
+.header img {max-height:60px; display:block; margin:auto;}
+.header h1 {margin-top:6px; font-size:18px;}
+.container {max-width:420px; margin:auto; padding:10px;}
+.tabs {display:flex; gap:5px; margin-bottom:10px;}
+button {flex:1; padding:10px;}
+input,select {width:100%; padding:10px; margin-bottom:8px; box-sizing:border-box;}
+.input-group label {font-size:12px; font-weight:bold;}
+.result {background:#eee; padding:10px; white-space:pre-wrap;}
+.help-box {background:#eef6ff; padding:10px; font-size:13px; margin-bottom:10px;}
+.code {border-bottom:1px solid #ddd; padding:8px; cursor:pointer;}
+.hide {display:none;}
 </style>
 </head>
 
 <body>
 
-<!-- ✅ NY HEADER -->
 <div class="header">
-    <img src="All-Steel_web.png" alt="All Steel">
-    <h1>CNC PRO</h1>
+<img src="All-Steel_web.png">
+<h1>CNC PRO</h1>
 </div>
 
 <div class="container">
@@ -150,417 +37,183 @@ input, select {
 <button onclick="showTab('zero')">Zero</button>
 <button onclick="showTab('g')">G/M</button>
 <button onclick="showTab('anilam')">Anilam</button>
+<button onclick="showTab('tri')">Trekant</button>
 </div>
 
 <!-- CALC -->
 <div id="calc">
+<input id="diameter" value="10">
+<select id="material" onchange="updateVC()">
+<option value="rustfri">Rustfri</option>
+<option value="alu">Alu</option>
+<option value="jern">Jern</option>
+</select>
 
-<div class="input-group">
-    <label>Diameter (mm)</label>
-    <input id="diameter" value="10">
-</div>
+<select id="tool" onchange="updateVC()">
+<option value="HM">HM</option>
+<option value="HSS">HSS</option>
+</select>
 
-<div class="input-group">
-    <label>Materiale</label>
-    <select id="material" onchange="updateVC()">
-        <option value="rustfri">Rustfri</option>
-        <option value="alu">Alu</option>
-        <option value="jern">Jern</option>
-    </select>
-</div>
-
-<div class="input-group">
-    <label>Værktøj</label>
-    <select id="tool" onchange="updateVC()">
-        <option value="HM">HM</option>
-        <option value="HSS">HSS</option>
-    </select>
-</div>
-
-<div class="input-group">
-    <label>VC (m/min)</label>
-    <input id="vc">
-</div>
-
-<div class="input-group">
-    <label>Tænder</label>
-    <input id="teeth" value="4">
-</div>
-
-<div class="input-group">
-    <label>fz (mm/tand)</label>
-    <input id="fz" value="0.05">
-</div>
+<input id="vc">
+<input id="teeth" value="4">
+<input id="fz" value="0.05">
 
 <div class="result">
 RPM: <span id="rpm"></span><br>
-Feed: <span id="feed"></span> mm/min
+Feed: <span id="feed"></span>
 </div>
-
-<div class="info-box">
-<b>📚 Sådan beregnes værdierne:</b>
-
-<b>RPM (Spindelhastigheid):</b>
-<div class="formula">RPM = (VC × 1000) / (π × Diameter)</div>
-VC er skærehastigheden (m/min), som afhænger af materiale og værktøjstype.
-
-<b>Feed (Fremførsel):</b>
-<div class="formula">Feed = RPM × Tænder × fz</div>
-fz er fremførselen per tand (mm/tand), som du kan vælge ud fra ønsket overfladekvalitet.
-
-<b>Eksempel:</b>
-Hvis du borer en Ø10 mm hul i rustfrit stål med HM værktøj får du automatisk de rigtige værdier!
-</div>
-
 </div>
 
 <!-- ZERO -->
 <div id="zero" class="hide">
-
-<p>Punkt 1</p>
-<p>Punkt 2</p>
-
 <input id="m1">
 <input id="m2">
-
-<div class="result">
-Nul: <span id="zeroRes"></span>
+<div class="result">Nul: <span id="zeroRes"></span></div>
 </div>
 
-</div>
-
-<!-- G/M -->
+<!-- G -->
 <div id="g" class="hide">
+<input id="searchG" placeholder="Søg..." onkeyup="showGCodes()">
+<div id="glist"></div>
+<div id="gdetail" class="result"></div>
+</div>
+
+<!-- TREKANT -->
+<div id="tri" class="hide">
 
 <div class="help-box">
-<b>Fanuc G/M Koder</b><br><br>
-Søg efter ønskede koder med beskrivelse.
+<b>Trekant</b><br>
+Indtast 2 værdier.<br>
+TIP: c + A → finder begge kateter
 </div>
 
-<input id="searchG" placeholder="Søg..." onkeyup="showGCodes()">
+<input id="ta" placeholder="a">
+<input id="tb" placeholder="b">
+<input id="tc" placeholder="c">
+<input id="tA" placeholder="vinkel A">
+<input id="tB" placeholder="vinkel B">
 
-<div class="list-container">
-<div id="glist"></div>
+<div class="result">
+a: <span id="ra"></span><br>
+b: <span id="rb"></span><br>
+c: <span id="rc"></span><br>
+A: <span id="rA"></span><br>
+B: <span id="rB"></span>
 </div>
-<div id="gdetail" class="result"></div>
-
 </div>
 
 <!-- ANILAM -->
 <div id="anilam" class="hide">
-
-<div class="help-box">
-<b>Anilam system</b><br><br>
-
-1. Indtast V-koder<br>
-2. Kør G-kode<br><br>
-
-Eksempel:<br>
-V02 25<br>
-V03 0<br>
-G05
-</div>
-
 <input id="searchA" placeholder="Søg..." onkeyup="showAnilam()">
-
-<div class="list-container">
 <div id="alist"></div>
-</div>
 <div id="detail" class="result"></div>
-
 </div>
 
 </div>
 
 <script>
 
-// DATA - FANUC G/M KODER
+// FANUC
 const gCodes = [
-  // RAPID POSITIONING
-  {code:"G00", category:"rapid", desc:"Hurtig lineær interpolation", detail:"G00 X10 Y20 - Flytter værktøj til koordinater med højeste hastighed"},
-  
-  // LINEAR
-  {code:"G01", category:"linear", desc:"Lineær interpolation", detail:"G01 X10 Y20 F100 - Flytter værktøj lineært med specificeret feedrate"},
-  
-  // ARC
-  {code:"G02", category:"arc", desc:"Cirkulær interpolation (CW)", detail:"G02 X10 Y20 I5 J5 - Cirkulær bevægelse med uret. I,J = midtpunkt offset"},
-  {code:"G03", category:"arc", desc:"Cirkulær interpolation (CCW)", detail:"G03 X10 Y20 I5 J5 - Cirkulær bevægelse mod uret. I,J = midtpunkt offset"},
-  
-  // PLANE SELECTION
-  {code:"G17", category:"plane", desc:"XY-plan valg", detail:"G17 - Værktøjet arbejder i XY-plan (standard)"},
-  {code:"G18", category:"plane", desc:"ZX-plan valg", detail:"G18 - Værktøjet arbejder i ZX-plan"},
-  {code:"G19", category:"plane", desc:"YZ-plan valg", detail:"G19 - Værktøjet arbejder i YZ-plan"},
-  
-  // DISTANCE MODE
-  {code:"G20", category:"other", desc:"Tommer-enhed", detail:"G20 - Værtøjsbaner måles i tommer (inch)"},
-  {code:"G21", category:"other", desc:"Metrisk enhed", detail:"G21 - Værktøjsbaner måles i millimeter"},
-  
-  // CANNED CYCLES - DRILLING
-  {code:"G81", category:"drilling", desc:"Enkelt boring", detail:"G81 X10 Y20 Z-10 R2 F100 - Boring uden pakning. R=sikkerhedshøjde"},
-  {code:"G82", category:"drilling", desc:"Boring med pause", detail:"G82 X10 Y20 Z-10 R2 P1000 F100 - Boring med pause i bunden (P=tid i ms)"},
-  {code:"G83", category:"drilling", desc:"Peck boring", detail:"G83 X10 Y20 Z-10 R2 Q5 F100 - Boring med pakning. Q=pakkingstørrelse"},
-  {code:"G84", category:"drilling", desc:"Gevindskæring", detail:"G84 X10 Y20 Z-10 R2 F100 - Gevindskæring med spindel synkronisering"},
-  {code:"G85", category:"drilling", desc:"Boring med rétrækning", detail:"G85 X10 Y20 Z-10 R2 F100 - Boring med langsom rétrækning"},
-  {code:"G86", category:"drilling", desc:"Boring med spindel stop", detail:"G86 X10 Y20 Z-10 R2 F100 - Boring, spindel stopper ved bunden"},
-  {code:"G87", category:"drilling", desc:"Back boring", detail:"G87 - Boring bagfra"},
-  {code:"G88", category:"drilling", desc:"Boring med manuel udsendelse", detail:"G88 - Boring med manuel værktøjsudsendelse"},
-  {code:"G89", category:"drilling", desc:"Boring med tilvask", detail:"G89 X10 Y20 Z-10 R2 P500 F100 - Boring med pause og tilvask"},
-  
-  // CANNED CYCLES - MILLING
-  {code:"G71", category:"canned", desc:"Skalering - lineær", detail:"G71 - Lineær skalering af cyklus"},
-  {code:"G72", category:"canned", desc:"Skalering - rotation", detail:"G72 - Rotationsskalering af cyklus"},
-  {code:"G73", category:"canned", desc:"Boring med høj feedrate", detail:"G73 - Hurtig boring med lille pakning"},
-  {code:"G90", category:"canned", desc:"Absolutte koordinater", detail:"G90 - Alle positioner som absolutte værdier"},
-  {code:"G91", category:"canned", desc:"Relative koordinater", detail:"G91 - Alle positioner som relative værdier (inkrementale)"},
-  
-  // TOOL/OFFSET
-  {code:"G10", category:"offset", desc:"Værktøj offset data sæt", detail:"G10 P1 X10 Z-5 - Sætter værktøj offset (P=værktøjsnummer)"},
-{code:"G40", category:"offset", desc:"Ingen radius kompensation", detail:"G40 - Slår værktøjsradius kompensation fra\n\nBruges altid før og efter G41/G42"},
-{code:"G41", category:"offset", desc:"Radius komp venstre", detail:"G41 D1 - Værktøjsradius kompensation til venstre\n\nD = værktøjsnummer\n\nBrug:\nFræsning langs kontur, værktøj på venstre side af bane"},
-{code:"G42", category:"offset", desc:"Radius komp højre", detail:"G42 D1 - Værktøjsradius kompensation til højre\n\nD = værktøjsnummer\n\nBrug:\nFræsning langs kontur, værktøj på højre side af bane"},
-  {code:"G43", category:"offset", desc:"Værktøj længde offset +", detail:"G43 H1 - Aktiverer værktøj længde offset (H=offset nummer)"},
-  {code:"G44", category:"offset", desc:"Værktøj længde offset -", detail:"G44 H1 - Aktiverer negativ værktøj længde offset"},
-  {code:"G49", category:"offset", desc:"Annuller værktøj offset", detail:"G49 - Deaktiverer værktøj længde offset"},
-  
-  // COORDINATE SYSTEM
-  {code:"G54", category:"offset", desc:"Koordinatsystem 1", detail:"G54 - Arbejdskoordinatsystem 1"},
-  {code:"G55", category:"offset", desc:"Koordinatsystem 2", detail:"G55 - Arbejdskoordinatsystem 2"},
-  {code:"G56", category:"offset", desc:"Koordinatsystem 3", detail:"G56 - Arbejdskoordinatsystem 3"},
-  {code:"G57", category:"offset", desc:"Koordinatsystem 4", detail:"G57 - Arbejdskoordinatsystem 4"},
-  {code:"G58", category:"offset", desc:"Koordinatsystem 5", detail:"G58 - Arbejdskoordinatsystem 5"},
-  {code:"G59", category:"offset", desc:"Koordinatsystem 6", detail:"G59 - Arbejdskoordinatsystem 6"},
-  
-  // SPEED MODE
-  {code:"G94", category:"spindle", desc:"Feedrate per minut", detail:"G94 - Feedrate måles i enheder per minut (standard)"},
-  {code:"G95", category:"spindle", desc:"Feedrate per omdrejning", detail:"G95 - Feedrate måles i enheder per spindelomdrejning"},
-  
-  // SPINDLE
-  {code:"M03", category:"spindle", desc:"Spindel CW", detail:"M03 S1000 - Spindel drejer med uret (S=RPM)"},
-  {code:"M04", category:"spindle", desc:"Spindel CCW", detail:"M04 S1000 - Spindel drejer mod uret"},
-  {code:"M05", category:"spindle", desc:"Spindel STOP", detail:"M05 - Spindel stopper"},
-  
-  // TOOL CHANGE
-  {code:"M06", category:"tool", desc:"Værktøj skift", detail:"M06 T2 - Skifter til værktøj nummer 2"},
-  {code:"M01", category:"tool", desc:"Valgfri stop", detail:"M01 - Stop hvis der er valgt stop via kontrolpanel"},
-  {code:"M00", category:"tool", desc:"Tvunget stop", detail:"M00 - Stanser programmet, operatør må trykke start på ny"},
-  
-  // COOLANT
-  {code:"M07", category:"other", desc:"Kølevæske 2 ON", detail:"M07 - Aktiverer kølevæske type 2"},
-  {code:"M08", category:"other", desc:"Kølevæske ON", detail:"M08 - Aktiverer kølevæske"},
-  {code:"M09", category:"other", desc:"Kølevæske OFF", detail:"M09 - Deaktiverer kølevæske"},
-  
-  // PROGRAM
-  {code:"M02", category:"other", desc:"Program STOP", detail:"M02 - Afslutter program, spindel og kølevæske stoppes"},
-  {code:"M30", category:"other", desc:"Program END", detail:"M30 - Afslutter program og går tilbage til start"},
-  
-  // PROBE
-  {code:"G65", category:"other", desc:"Macro call", detail:"G65 - Kalder makro program"},
-  {code:"G31", category:"other", desc:"Taster/probe", detail:"G31 X10 Y20 Z-10 - Kører probe til position"},
-  
-  // DWELL
-  {code:"G04", category:"other", desc:"Pause/dwell", detail:"G04 P1000 - Pause i programmet (P=tid i millisekunder)"},
-  
-  // RETURN MODE
-  {code:"G98", category:"canned", desc:"Retur til start højde", detail:"G98 - Efter boring returneres til begyndelseshøjde"},
-  {code:"G99", category:"canned", desc:"Retur til sikkerhedshøjde", detail:"G99 - Efter boring returneres til sikkerhedshøjde (R)"},
+{code:"G40",desc:"Cancel radius comp",detail:"Sluk radius komp"},
+{code:"G41",desc:"Radius komp venstre",detail:"Venstre side"},
+{code:"G42",desc:"Radius komp højre",detail:"Højre side"},
+{code:"G00",desc:"Rapid",detail:"Hurtig"},
+{code:"G01",desc:"Lineær",detail:"Feed"}
 ];
 
-// DATA - ANILAM (SEPARAT SYSTEM - BLANDES IKKE MED FANUC)
-const anilam = [
-
-  /* ================= V-KODER (KERNESYSTEM) ================= */
-  
-  {type:"v",group:"v",code:"V01",desc:"Plan/retning",detail:"V01 = plan og retning\n\n1 = XY plan\n2 = XZ plan\n3 = YZ plan"},
-  
-  {type:"v",group:"v",code:"V02",desc:"X afstand",detail:"Afstand til center eller startpunkt i X"},
-  {type:"v",group:"v",code:"V03",desc:"Y afstand",detail:"Afstand til center eller startpunkt i Y"},
-  {type:"v",group:"v",code:"V04",desc:"Slut X",detail:"Slutpunkt X (inkremental)"},
-  {type:"v",group:"v",code:"V05",desc:"Slut Y",detail:"Slutpunkt Y (inkremental)"},
-  {type:"v",group:"v",code:"V06",desc:"Længde",detail:"Dimension i X"},
-  {type:"v",group:"v",code:"V07",desc:"Bredde",detail:"Dimension i Y"},
-  
-  {type:"v",group:"v",code:"V40",desc:"Start højde",detail:"Typisk 2 mm over emne"},
-  {type:"v",group:"v",code:"V41",desc:"X længde / center",detail:"Afhænger af cyklus"},
-  {type:"v",group:"v",code:"V42",desc:"Y længde / center",detail:"Afhænger af cyklus"},
-  {type:"v",group:"v",code:"V43",desc:"Dybde Z",detail:"Bearbejdningsdybde"},
-  {type:"v",group:"v",code:"V44",desc:"Radius / diameter",detail:"Hjørne radius eller huldiameter"},
-  {type:"v",group:"v",code:"V45",desc:"Overlap",detail:"Step i X/Y"},
-  {type:"v",group:"v",code:"V46",desc:"Z step",detail:"Dybde pr gennemløb"},
-  {type:"v",group:"v",code:"V47",desc:"Rest materiale",detail:"Efterlader materiale til finish"},
-  {type:"v",group:"v",code:"V48",desc:"Finish feed",detail:"Slutbehandling feed"},
-  {type:"v",group:"v",code:"V50",desc:"Finish ON/OFF",detail:"0 = finish, 1 = ingen finish"},
-  
-  {type:"v",group:"v",code:"V60",desc:"Vinkel",detail:"Rotation / konus vinkel"},
-  {type:"v",group:"v",code:"V62",desc:"Længde",detail:"Længde af form"},
-  {type:"v",group:"v",code:"V63",desc:"Gentagelser",detail:"Antal passager"},
-  {type:"v",group:"v",code:"V64",desc:"Start radius",detail:"Start radius"},
-  {type:"v",group:"v",code:"V65",desc:"Slut radius",detail:"Slut radius"},
-  {type:"v",group:"v",code:"V66",desc:"Konus type",detail:"0 = konkav, 1 = konveks"},
-  {type:"v",group:"v",code:"V79",desc:"Retning",detail:"CW eller CCW"},
-  
-  /* ================= ANILAM G-KODER (SPECIFIKKE TIL ANILAM) ================= */
-  
-  /* Bore */
-  {type:"g",group:"bore",code:"A-G80",desc:"Stop cyklus",detail:"Stopper aktiv borecyklus"},
-  {type:"g",group:"bore",code:"A-G81",desc:"Boring",detail:"Standard boring"},
-  {type:"g",group:"bore",code:"A-G82",desc:"Boring m. dwell",detail:"Pause i bund"},
-  {type:"g",group:"bore",code:"A-G83",desc:"Peck boring",detail:"Spånbrydning"},
-  {type:"g",group:"bore",code:"A-G84",desc:"Gevind",detail:"Tap cyklus"},
-  {type:"g",group:"bore",code:"A-G85",desc:"Feed retur",detail:"Retur med feed"},
-  {type:"g",group:"bore",code:"A-G86",desc:"Stop + rapid",detail:"Stop og hurtig retur"},
-  {type:"g",group:"bore",code:"A-G87",desc:"Bagboring",detail:"Special cyklus"},
-  {type:"g",group:"bore",code:"A-G88",desc:"Manuel dwell",detail:"Operatør styring"},
-  {type:"g",group:"bore",code:"A-G89",desc:"Dwell + retur",detail:"Pause + feed retur"},
-  
-  /* Fræsning */
-  {type:"g",group:"mill",code:"A-G75",desc:"Rammefræsning",detail:"Automatisk ramme"},
-  {type:"g",group:"mill",code:"A-G76",desc:"Hulfræsning",detail:"Fræser hul"},
-  {type:"g",group:"mill",code:"A-G77",desc:"Cirkulær lomme",detail:"Rund lomme"},
-  {type:"g",group:"mill",code:"A-G78",desc:"Rektangulær lomme",detail:"Firkant lomme"},
-  {type:"g",group:"mill",code:"A-G79",desc:"Boltehulscirkel",detail:"Bore mønster"},
-  
-  /* Geometri */
-  {type:"g",group:"geo",code:"A-G05",desc:"Ellipse",detail:"Ellipse cyklus"},
-  {type:"g",group:"geo",code:"A-G06",desc:"Spiral",detail:"Spiral fræsning"},
-  {type:"g",group:"geo",code:"A-G48",desc:"Konisk fræsning",detail:"Konus profil"},
-  {type:"g",group:"geo",code:"A-G49",desc:"Radial konus",detail:"Konus omkring center"},
-  
-  /* Polær */
-  {type:"g",group:"polar",code:"A-G10",desc:"Polær rapid",detail:"Polar position"},
-  {type:"g",group:"polar",code:"A-G11",desc:"Polær feed",detail:"Med feed"},
-  {type:"g",group:"polar",code:"A-G12",desc:"Polær offset",detail:"Med center"},
-  {type:"g",group:"polar",code:"A-G13",desc:"Polær interpolation",detail:"Avanceret polar"},
-  
-  /* Transform */
-  {type:"g",group:"transform",code:"A-G51",desc:"Rotation",detail:"Roterer program"},
-  {type:"g",group:"transform",code:"A-G52",desc:"Stop rotation",detail:"Stop rotation"},
-  {type:"g",group:"transform",code:"A-G53",desc:"Scaling",detail:"Skalering"},
-  {type:"g",group:"transform",code:"A-G54",desc:"Stop scaling",detail:"Stop scaling"},
-  
-  /* ================= AUX (AUXILIARY) ================= */
-  
-  {type:"aux",group:"aux",code:"AUX 0003",desc:"Spindel CW",detail:"Start med uret"},
-  {type:"aux",group:"aux",code:"AUX 0004",desc:"Spindel CCW",detail:"Start mod uret"},
-  {type:"aux",group:"aux",code:"AUX 0005",desc:"Stop spindel",detail:"Stop"},
-  {type:"aux",group:"aux",code:"AUX 0006",desc:"Coolant ON",detail:"Kølervæske"},
-  {type:"aux",group:"aux",code:"AUX 0007",desc:"Coolant OFF",detail:"Stop køling"},
-  
-  {type:"aux",group:"aux",code:"AUX 0100",desc:"Spejl X",detail:"Spejler i X"},
-  {type:"aux",group:"aux",code:"AUX 0200",desc:"Spejl Y",detail:"Spejler i Y"},
-  {type:"aux",group:"aux",code:"AUX 0300",desc:"Spejl XY",detail:"Spejler XY"},
-  {type:"aux",group:"aux",code:"AUX 0700",desc:"Stop spejl",detail:"Deaktiver spejl"},
-  
-  {type:"aux",group:"aux",code:"AUX 1112",desc:"Aktiver safety",detail:"Aktiver grænser"},
-  {type:"aux",group:"aux",code:"AUX 1113",desc:"Definer safety",detail:"Opsæt grænser"},
-  
-  {type:"aux",group:"aux",code:"AUX 1400",desc:"Feed kontrol",detail:"Juster feed"},
-  {type:"aux",group:"aux",code:"AUX 1401",desc:"Feed+rapid kontrol",detail:"Juster begge"},
-  
-  {type:"aux",group:"aux",code:"AUX 9030",desc:"Stop rotation",detail:"Stop plan rotation"},
-  {type:"aux",group:"aux",code:"AUX 9031",desc:"Rotation X",detail:"Plan rotation X"},
-  {type:"aux",group:"aux",code:"AUX 9032",desc:"Rotation Y",detail:"Plan rotation Y"},
-  {type:"aux",group:"aux",code:"AUX 9033",desc:"Rotation Z",detail:"Plan rotation Z"}
-];
-
-// G CODES - SEARCH (FANUC)
-function showGCodes() {
-  let gSearch = document.getElementById("searchG").value.toUpperCase();
-  let list = document.getElementById("glist");
-  list.innerHTML = "";
-
-  gCodes.forEach(g => {
-
-    if (gSearch &&
-        !g.code.toUpperCase().includes(gSearch) &&
-        !g.desc.toUpperCase().includes(gSearch) &&
-        !g.detail.toUpperCase().includes(gSearch)
-    ) return;
-
-    let d = document.createElement("div");
-    d.className = "code";
-    d.innerText = g.code + " - " + g.desc;
-
-    d.onclick = () => {
-      let detailText = g.code + "\n\n" + g.desc + "\n\n" + g.detail;
-      document.getElementById("gdetail").innerText = detailText;
-    }
-
-    list.appendChild(d);
-  });
+function showGCodes(){
+let s=searchG.value.toUpperCase();
+glist.innerHTML="";
+gCodes.forEach(g=>{
+if(s && !g.code.toUpperCase().includes(s) && !g.desc.toUpperCase().includes(s)) return;
+let d=document.createElement("div");
+d.className="code";
+d.innerText=g.code+" - "+g.desc;
+d.onclick=()=>gdetail.innerText=g.code+"\n"+g.detail;
+glist.appendChild(d);
+});
 }
 
+// ANILAM
+const anilam=[
+{code:"V02",desc:"X data",detail:"X position"},
+{code:"AUX 0003",desc:"Spindel",detail:"Start"}
+];
 
-// ANILAM - SEARCH
-function showAnilam() {
-  let searchText = document.getElementById("searchA").value.toUpperCase();
-  let list = document.getElementById("alist");
-  list.innerHTML = "";
-
-  anilam.forEach(a => {
-    if (searchText && !a.code.includes(searchText) && !a.desc.toUpperCase().includes(searchText)) return;
-
-    let d = document.createElement("div");
-    d.className = "code";
-    d.innerText = a.code + " - " + a.desc;
-
-    d.onclick = () => {
-      document.getElementById("detail").innerText = a.code + "\n\n" + a.detail;
-    }
-
-    list.appendChild(d);
-  });
+function showAnilam(){
+let s=searchA.value.toUpperCase();
+alist.innerHTML="";
+anilam.forEach(a=>{
+if(s && !a.code.toUpperCase().includes(s)) return;
+let d=document.createElement("div");
+d.className="code";
+d.innerText=a.code+" - "+a.desc;
+d.onclick=()=>detail.innerText=a.code+"\n"+a.detail;
+alist.appendChild(d);
+});
 }
 
 // CALC
-const vcTable = {
-  rustfri: {HM: 80, HSS: 20},
-  alu: {HM: 300, HSS: 80},
-  jern: {HM: 120, HSS: 25}
-};
+const vcTable={rustfri:{HM:80,HSS:20},alu:{HM:300,HSS:80},jern:{HM:120,HSS:25}};
+function updateVC(){vc.value=vcTable[material.value][tool.value];}
 
-function updateVC() {
-  vc.value = vcTable[material.value][tool.value];
+setInterval(()=>{
+let d=+diameter.value;
+let v=+vc.value;
+let z=+teeth.value;
+let fzv=+fz.value;
+
+if(d&&v){
+let rpm=Math.round((v*1000)/(Math.PI*d));
+let feed=Math.round(rpm*z*fzv);
+rpmSpan=rpm;
+document.getElementById("rpm").innerText=rpm;
+document.getElementById("feed").innerText=feed;
 }
 
-setInterval(() => {
-  let d = +diameter.value;
-  let v = +vc.value;
-  let z = +teeth.value;
-  let fzv = +fz.value;
+if(m1.value&&m2.value){
+zeroRes.innerText=((+m1.value + +m2.value)/2).toFixed(3);
+}
 
-  if (d && v) {
-    let rpm = Math.round((v * 1000) / (Math.PI * d));
-    let feed = Math.round(rpm * z * fzv);
+// TREKANT
+let a=parseFloat(ta.value);
+let b=parseFloat(tb.value);
+let c=parseFloat(tc.value);
+let A=parseFloat(tA.value);
 
-    document.getElementById("rpm").innerText = rpm;
-    document.getElementById("feed").innerText = feed;
-  }
+// Pythagoras
+if(a&&b&&!c){rc.innerText=Math.sqrt(a*a+b*b).toFixed(3);}
+if(b&&c&&!a){ra.innerText=Math.sqrt(c*c-b*b).toFixed(3);}
+if(a&&c&&!b){rb.innerText=Math.sqrt(c*c-a*a).toFixed(3);}
 
-  if (m1.value && m2.value) {
-    zeroRes.innerText = ((+m1.value + +m2.value) / 2).toFixed(3);
-  }
+// vinkler
+if(a&&b){
+let AA=Math.atan(a/b)*(180/Math.PI);
+rA.innerText=AA.toFixed(2);
+rB.innerText=(90-AA).toFixed(2);
+}
 
-}, 200);
+if(c&&A&&!a){
+let rad=A*Math.PI/180;
+ra.innerText=(Math.sin(rad)*c).toFixed(3);
+rb.innerText=(Math.cos(rad)*c).toFixed(3);
+}
+
+},200);
 
 // TABS
-function showTab(t) {
-  ["calc", "zero", "g", "anilam"].forEach(id => {
-    document.getElementById(id).classList.toggle("hide", id !== t);
-  });
-  
-  // Initialize when opening g tab
-  if (t === "g") {
-    showGCodes();
-  }
-  // Initialize when opening anilam tab
-  if (t === "anilam") {
-    showAnilam();
-  }
+function showTab(t){
+["calc","zero","g","anilam","tri"].forEach(id=>{
+document.getElementById(id).classList.toggle("hide",id!==t);
+});
+if(t==="g") showGCodes();
+if(t==="anilam") showAnilam();
 }
 
 // INIT
 updateVC();
-showAnilam();
+showGCodes();
 
 </script>
 
