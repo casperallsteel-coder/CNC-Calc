@@ -261,9 +261,11 @@ V03 0<br>
 G05
 </div>
 
-<input id="searchA" placeholder="Søg...">
+<input id="searchA" placeholder="Søg..." onkeyup="showAnilam()">
 
+<div class="list-container">
 <div id="alist"></div>
+</div>
 <div id="detail" class="result"></div>
 
 </div>
@@ -360,111 +362,104 @@ const gCodes = [
   {code:"G99", category:"canned", desc:"Retur til sikkerhedshøjde", detail:"G99 - Efter boring returneres til sikkerhedshøjde (R)"},
 ];
 
-// DATA - ANILAM
+// DATA - ANILAM (SEPARAT SYSTEM - BLANDES IKKE MED FANUC)
 const anilam = [
 
-/* ================= V-KODER (KERNESYSTEM) ================= */
-
-{type:"v",group:"v",code:"V01",desc:"Plan/retning",detail:
-`V01 = plan og retning
-
-1 = XY plan
-2 = XZ plan
-3 = YZ plan`},
-
-{type:"v",group:"v",code:"V02",desc:"X afstand",detail:`Afstand til center eller startpunkt i X`},
-{type:"v",group:"v",code:"V03",desc:"Y afstand",detail:`Afstand til center eller startpunkt i Y`},
-{type:"v",group:"v",code:"V04",desc:"Slut X",detail:`Slutpunkt X (inkremental)`},
-{type:"v",group:"v",code:"V05",desc:"Slut Y",detail:`Slutpunkt Y (inkremental)`},
-{type:"v",group:"v",code:"V06",desc:"Længde",detail:`Dimension i X`},
-{type:"v",group:"v",code:"V07",desc:"Bredde",detail:`Dimension i Y`},
-
-{type:"v",group:"v",code:"V40",desc:"Start højde",detail:`Typisk 2 mm over emne`},
-{type:"v",group:"v",code:"V41",desc:"X længde / center",detail:`Afhænger af cyklus`},
-{type:"v",group:"v",code:"V42",desc:"Y længde / center",detail:`Afhænger af cyklus`},
-{type:"v",group:"v",code:"V43",desc:"Dybde Z",detail:`Bearbejdningsdybde`},
-{type:"v",group:"v",code:"V44",desc:"Radius / diameter",detail:`Hjørne radius eller huldiameter`},
-{type:"v",group:"v",code:"V45",desc:"Overlap",detail:`Step i X/Y`},
-{type:"v",group:"v",code:"V46",desc:"Z step",detail:`Dybde pr gennemløb`},
-{type:"v",group:"v",code:"V47",desc:"Rest materiale",detail:`Efterlader materiale til finish`},
-{type:"v",group:"v",code:"V48",desc:"Finish feed",detail:`Slutbehandling feed`},
-{type:"v",group:"v",code:"V50",desc:"Finish ON/OFF",detail:`0 = finish, 1 = ingen finish`},
-
-{type:"v",group:"v",code:"V60",desc:"Vinkel",detail:`Rotation / konus vinkel`},
-{type:"v",group:"v",code:"V62",desc:"Længde",detail:`Længde af form`},
-{type:"v",group:"v",code:"V63",desc:"Gentagelser",detail:`Antal passager`},
-{type:"v",group:"v",code:"V64",desc:"Start radius",detail:`Start radius`},
-{type:"v",group:"v",code:"V65",desc:"Slut radius",detail:`Slut radius`},
-{type:"v",group:"v",code:"V66",desc:"Konus type",detail:`0 = konkav, 1 = konveks`},
-{type:"v",group:"v",code:"V79",desc:"Retning",detail:`CW eller CCW`},
-
-/* ================= G-KODER ================= */
-
-/* Bore */
-{type:"g",group:"bore",code:"G80",desc:"Stop cyklus",detail:"Stopper aktiv borecyklus"},
-{type:"g",group:"bore",code:"G81",desc:"Boring",detail:"Standard boring"},
-{type:"g",group:"bore",code:"G82",desc:"Boring m. dwell",detail:"Pause i bund"},
-{type:"g",group:"bore",code:"G83",desc:"Peck boring",detail:"Spånbrydning"},
-{type:"g",group:"bore",code:"G84",desc:"Gevind",detail:"Tap cyklus"},
-{type:"g",group:"bore",code:"G85",desc:"Feed retur",detail:"Retur med feed"},
-{type:"g",group:"bore",code:"G86",desc:"Stop + rapid",detail:"Stop og hurtig retur"},
-{type:"g",group:"bore",code:"G87",desc:"Bagboring",detail:"Special cyklus"},
-{type:"g",group:"bore",code:"G88",desc:"Manuel dwell",detail:"Operatør styring"},
-{type:"g",group:"bore",code:"G89",desc:"Dwell + retur",detail:"Pause + feed retur"},
-
-/* Fræsning */
-{type:"g",group:"mill",code:"G75",desc:"Rammefræsning",detail:"Automatisk ramme"},
-{type:"g",group:"mill",code:"G76",desc:"Hulfræsning",detail:"Fræser hul"},
-{type:"g",group:"mill",code:"G77",desc:"Cirkulær lomme",detail:"Rund lomme"},
-{type:"g",group:"mill",code:"G78",desc:"Rektangulær lomme",detail:"Firkant lomme"},
-{type:"g",group:"mill",code:"G79",desc:"Boltehulscirkel",detail:"Bore mønster"},
-
-/* Geometri */
-{type:"g",group:"geo",code:"G05",desc:"Ellipse",detail:"Ellipse cyklus"},
-{type:"g",group:"geo",code:"G06",desc:"Spiral",detail:"Spiral fræsning"},
-{type:"g",group:"geo",code:"G48",desc:"Konisk fræsning",detail:"Konus profil"},
-{type:"g",group:"geo",code:"G49",desc:"Radial konus",detail:"Konus omkring center"},
-
-/* Polær */
-{type:"g",group:"polar",code:"G10",desc:"Polær rapid",detail:"Polar position"},
-{type:"g",group:"polar",code:"G11",desc:"Polær feed",detail:"Med feed"},
-{type:"g",group:"polar",code:"G12",desc:"Polær offset",detail:"Med center"},
-{type:"g",group:"polar",code:"G13",desc:"Polær interpolation",detail:"Avanceret polar"},
-
-/* Transform */
-{type:"g",group:"transform",code:"G51",desc:"Rotation",detail:"Roterer program"},
-{type:"g",group:"transform",code:"G52",desc:"Stop rotation",detail:"Stop rotation"},
-{type:"g",group:"transform",code:"G53",desc:"Scaling",detail:"Skalering"},
-{type:"g",group:"transform",code:"G54",desc:"Stop scaling",detail:"Stop scaling"},
-
-/* ================= AUX ================= */
-
-{type:"aux",group:"aux",code:"AUX 0003",desc:"Spindel CW",detail:"Start med uret"},
-{type:"aux",group:"aux",code:"AUX 0004",desc:"Spindel CCW",detail:"Start mod uret"},
-{type:"aux",group:"aux",code:"AUX 0005",desc:"Stop spindel",detail:"Stop"},
-{type:"aux",group:"aux",code:"AUX 0006",desc:"Coolant ON",detail:"Kølervæske"},
-{type:"aux",group:"aux",code:"AUX 0007",desc:"Coolant OFF",detail:"Stop køling"},
-
-{type:"aux",group:"aux",code:"AUX 0100",desc:"Spejl X",detail:"Spejler i X"},
-{type:"aux",group:"aux",code:"AUX 0200",desc:"Spejl Y",detail:"Spejler i Y"},
-{type:"aux",group:"aux",code:"AUX 0300",desc:"Spejl XY",detail:"Spejler XY"},
-{type:"aux",group:"aux",code:"AUX 0700",desc:"Stop spejl",detail:"Deaktiver spejl"},
-
-{type:"aux",group:"aux",code:"AUX 1112",desc:"Aktiver safety",detail:"Aktiver grænser"},
-{type:"aux",group:"aux",code:"AUX 1113",desc:"Definer safety",detail:"Opsæt grænser"},
-
-{type:"aux",group:"aux",code:"AUX 1400",desc:"Feed kontrol",detail:"Juster feed"},
-{type:"aux",group:"aux",code:"AUX 1401",desc:"Feed+rapid kontrol",detail:"Juster begge"},
-
-{type:"aux",group:"aux",code:"AUX 9030",desc:"Stop rotation",detail:"Stop plan rotation"},
-{type:"aux",group:"aux",code:"AUX 9031",desc:"Rotation X",detail:"Plan rotation X"},
-{type:"aux",group:"aux",code:"AUX 9032",desc:"Rotation Y",detail:"Plan rotation Y"},
-{type:"aux",group:"aux",code:"AUX 9033",desc:"Rotation Z",detail:"Plan rotation Z"}
-
+  /* ================= V-KODER (KERNESYSTEM) ================= */
+  
+  {type:"v",group:"v",code:"V01",desc:"Plan/retning",detail:"V01 = plan og retning\n\n1 = XY plan\n2 = XZ plan\n3 = YZ plan"},
+  
+  {type:"v",group:"v",code:"V02",desc:"X afstand",detail:"Afstand til center eller startpunkt i X"},
+  {type:"v",group:"v",code:"V03",desc:"Y afstand",detail:"Afstand til center eller startpunkt i Y"},
+  {type:"v",group:"v",code:"V04",desc:"Slut X",detail:"Slutpunkt X (inkremental)"},
+  {type:"v",group:"v",code:"V05",desc:"Slut Y",detail:"Slutpunkt Y (inkremental)"},
+  {type:"v",group:"v",code:"V06",desc:"Længde",detail:"Dimension i X"},
+  {type:"v",group:"v",code:"V07",desc:"Bredde",detail:"Dimension i Y"},
+  
+  {type:"v",group:"v",code:"V40",desc:"Start højde",detail:"Typisk 2 mm over emne"},
+  {type:"v",group:"v",code:"V41",desc:"X længde / center",detail:"Afhænger af cyklus"},
+  {type:"v",group:"v",code:"V42",desc:"Y længde / center",detail:"Afhænger af cyklus"},
+  {type:"v",group:"v",code:"V43",desc:"Dybde Z",detail:"Bearbejdningsdybde"},
+  {type:"v",group:"v",code:"V44",desc:"Radius / diameter",detail:"Hjørne radius eller huldiameter"},
+  {type:"v",group:"v",code:"V45",desc:"Overlap",detail:"Step i X/Y"},
+  {type:"v",group:"v",code:"V46",desc:"Z step",detail:"Dybde pr gennemløb"},
+  {type:"v",group:"v",code:"V47",desc:"Rest materiale",detail:"Efterlader materiale til finish"},
+  {type:"v",group:"v",code:"V48",desc:"Finish feed",detail:"Slutbehandling feed"},
+  {type:"v",group:"v",code:"V50",desc:"Finish ON/OFF",detail:"0 = finish, 1 = ingen finish"},
+  
+  {type:"v",group:"v",code:"V60",desc:"Vinkel",detail:"Rotation / konus vinkel"},
+  {type:"v",group:"v",code:"V62",desc:"Længde",detail:"Længde af form"},
+  {type:"v",group:"v",code:"V63",desc:"Gentagelser",detail:"Antal passager"},
+  {type:"v",group:"v",code:"V64",desc:"Start radius",detail:"Start radius"},
+  {type:"v",group:"v",code:"V65",desc:"Slut radius",detail:"Slut radius"},
+  {type:"v",group:"v",code:"V66",desc:"Konus type",detail:"0 = konkav, 1 = konveks"},
+  {type:"v",group:"v",code:"V79",desc:"Retning",detail:"CW eller CCW"},
+  
+  /* ================= ANILAM G-KODER (SPECIFIKKE TIL ANILAM) ================= */
+  
+  /* Bore */
+  {type:"g",group:"bore",code:"A-G80",desc:"Stop cyklus",detail:"Stopper aktiv borecyklus"},
+  {type:"g",group:"bore",code:"A-G81",desc:"Boring",detail:"Standard boring"},
+  {type:"g",group:"bore",code:"A-G82",desc:"Boring m. dwell",detail:"Pause i bund"},
+  {type:"g",group:"bore",code:"A-G83",desc:"Peck boring",detail:"Spånbrydning"},
+  {type:"g",group:"bore",code:"A-G84",desc:"Gevind",detail:"Tap cyklus"},
+  {type:"g",group:"bore",code:"A-G85",desc:"Feed retur",detail:"Retur med feed"},
+  {type:"g",group:"bore",code:"A-G86",desc:"Stop + rapid",detail:"Stop og hurtig retur"},
+  {type:"g",group:"bore",code:"A-G87",desc:"Bagboring",detail:"Special cyklus"},
+  {type:"g",group:"bore",code:"A-G88",desc:"Manuel dwell",detail:"Operatør styring"},
+  {type:"g",group:"bore",code:"A-G89",desc:"Dwell + retur",detail:"Pause + feed retur"},
+  
+  /* Fræsning */
+  {type:"g",group:"mill",code:"A-G75",desc:"Rammefræsning",detail:"Automatisk ramme"},
+  {type:"g",group:"mill",code:"A-G76",desc:"Hulfræsning",detail:"Fræser hul"},
+  {type:"g",group:"mill",code:"A-G77",desc:"Cirkulær lomme",detail:"Rund lomme"},
+  {type:"g",group:"mill",code:"A-G78",desc:"Rektangulær lomme",detail:"Firkant lomme"},
+  {type:"g",group:"mill",code:"A-G79",desc:"Boltehulscirkel",detail:"Bore mønster"},
+  
+  /* Geometri */
+  {type:"g",group:"geo",code:"A-G05",desc:"Ellipse",detail:"Ellipse cyklus"},
+  {type:"g",group:"geo",code:"A-G06",desc:"Spiral",detail:"Spiral fræsning"},
+  {type:"g",group:"geo",code:"A-G48",desc:"Konisk fræsning",detail:"Konus profil"},
+  {type:"g",group:"geo",code:"A-G49",desc:"Radial konus",detail:"Konus omkring center"},
+  
+  /* Polær */
+  {type:"g",group:"polar",code:"A-G10",desc:"Polær rapid",detail:"Polar position"},
+  {type:"g",group:"polar",code:"A-G11",desc:"Polær feed",detail:"Med feed"},
+  {type:"g",group:"polar",code:"A-G12",desc:"Polær offset",detail:"Med center"},
+  {type:"g",group:"polar",code:"A-G13",desc:"Polær interpolation",detail:"Avanceret polar"},
+  
+  /* Transform */
+  {type:"g",group:"transform",code:"A-G51",desc:"Rotation",detail:"Roterer program"},
+  {type:"g",group:"transform",code:"A-G52",desc:"Stop rotation",detail:"Stop rotation"},
+  {type:"g",group:"transform",code:"A-G53",desc:"Scaling",detail:"Skalering"},
+  {type:"g",group:"transform",code:"A-G54",desc:"Stop scaling",detail:"Stop scaling"},
+  
+  /* ================= AUX (AUXILIARY) ================= */
+  
+  {type:"aux",group:"aux",code:"AUX 0003",desc:"Spindel CW",detail:"Start med uret"},
+  {type:"aux",group:"aux",code:"AUX 0004",desc:"Spindel CCW",detail:"Start mod uret"},
+  {type:"aux",group:"aux",code:"AUX 0005",desc:"Stop spindel",detail:"Stop"},
+  {type:"aux",group:"aux",code:"AUX 0006",desc:"Coolant ON",detail:"Kølervæske"},
+  {type:"aux",group:"aux",code:"AUX 0007",desc:"Coolant OFF",detail:"Stop køling"},
+  
+  {type:"aux",group:"aux",code:"AUX 0100",desc:"Spejl X",detail:"Spejler i X"},
+  {type:"aux",group:"aux",code:"AUX 0200",desc:"Spejl Y",detail:"Spejler i Y"},
+  {type:"aux",group:"aux",code:"AUX 0300",desc:"Spejl XY",detail:"Spejler XY"},
+  {type:"aux",group:"aux",code:"AUX 0700",desc:"Stop spejl",detail:"Deaktiver spejl"},
+  
+  {type:"aux",group:"aux",code:"AUX 1112",desc:"Aktiver safety",detail:"Aktiver grænser"},
+  {type:"aux",group:"aux",code:"AUX 1113",desc:"Definer safety",detail:"Opsæt grænser"},
+  
+  {type:"aux",group:"aux",code:"AUX 1400",desc:"Feed kontrol",detail:"Juster feed"},
+  {type:"aux",group:"aux",code:"AUX 1401",desc:"Feed+rapid kontrol",detail:"Juster begge"},
+  
+  {type:"aux",group:"aux",code:"AUX 9030",desc:"Stop rotation",detail:"Stop plan rotation"},
+  {type:"aux",group:"aux",code:"AUX 9031",desc:"Rotation X",detail:"Plan rotation X"},
+  {type:"aux",group:"aux",code:"AUX 9032",desc:"Rotation Y",detail:"Plan rotation Y"},
+  {type:"aux",group:"aux",code:"AUX 9033",desc:"Rotation Z",detail:"Plan rotation Z"}
 ];
-``
 
-// G CODES - SEARCH
+// G CODES - SEARCH (FANUC)
 function showGCodes() {
   let gSearch = document.getElementById("searchG").value.toUpperCase();
   let list = document.getElementById("glist");
@@ -489,7 +484,6 @@ function showGCodes() {
 
 // ANILAM - SEARCH
 function showAnilam() {
-  document.getElementById("searchA").addEventListener("keyup", showAnilam);
   let searchText = document.getElementById("searchA").value.toUpperCase();
   let list = document.getElementById("alist");
   list.innerHTML = "";
