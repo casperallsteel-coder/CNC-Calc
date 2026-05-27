@@ -315,6 +315,9 @@ const gCodes = [
   
   // TOOL/OFFSET
   {code:"G10", category:"offset", desc:"Værktøj offset data sæt", detail:"G10 P1 X10 Z-5 - Sætter værktøj offset (P=værktøjsnummer)"},
+{code:"G40", category:"offset", desc:"Ingen radius kompensation", detail:"G40 - Slår værktøjsradius kompensation fra\n\nBruges altid før og efter G41/G42"},
+{code:"G41", category:"offset", desc:"Radius komp venstre", detail:"G41 D1 - Værktøjsradius kompensation til venstre\n\nD = værktøjsnummer\n\nBrug:\nFræsning langs kontur, værktøj på venstre side af bane"},
+{code:"G42", category:"offset", desc:"Radius komp højre", detail:"G42 D1 - Værktøjsradius kompensation til højre\n\nD = værktøjsnummer\n\nBrug:\nFræsning langs kontur, værktøj på højre side af bane"},
   {code:"G43", category:"offset", desc:"Værktøj længde offset +", detail:"G43 H1 - Aktiverer værktøj længde offset (H=offset nummer)"},
   {code:"G44", category:"offset", desc:"Værktøj længde offset -", detail:"G44 H1 - Aktiverer negativ værktøj længde offset"},
   {code:"G49", category:"offset", desc:"Annuller værktøj offset", detail:"G49 - Deaktiverer værktøj længde offset"},
