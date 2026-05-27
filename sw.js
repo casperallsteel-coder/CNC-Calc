@@ -2,7 +2,9 @@ const CACHE_NAME = "cnc-pro-v1";
 
 const urlsToCache = [
   "/",
-  "index.html"
+  "index.html",
+  "manifest.json",
+  "All-Steel_web.png"
 ];
 
 self.addEventListener("install", event => {
