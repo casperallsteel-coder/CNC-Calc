@@ -469,8 +469,12 @@ function showGCodes() {
   list.innerHTML = "";
 
   gCodes.forEach(g => {
-    // Filter by search
-    if (gSearch && !g.code.includes(gSearch) && !g.desc.toUpperCase().includes(gSearch) && !g.detail.toUpperCase().includes(gSearch)) return;
+
+    if (gSearch &&
+        !g.code.toUpperCase().includes(gSearch) &&
+        !g.desc.toUpperCase().includes(gSearch) &&
+        !g.detail.toUpperCase().includes(gSearch)
+    ) return;
 
     let d = document.createElement("div");
     d.className = "code";
@@ -484,6 +488,7 @@ function showGCodes() {
     list.appendChild(d);
   });
 }
+
 
 // ANILAM - SEARCH
 function showAnilam() {
