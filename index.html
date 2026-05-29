@@ -221,6 +221,8 @@ alist.appendChild(d);
 const vcTable={rustfri:{HM:80,HSS:20},alu:{HM:300,HSS:80},jern:{HM:120,HSS:25}};
 function updateVC(){vc.value=vcTable[material.value][tool.value];}
 
+let lastZero = "";
+  
 setInterval(()=>{
 let d=+diameter.value;
 let v=+vc.value;
