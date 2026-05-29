@@ -232,7 +232,6 @@ let fzv=+fz.value;
 if(d&&v){
 let rpm=Math.round((v*1000)/(Math.PI*d));
 let feed=Math.round(rpm*z*fzv);
-rpmSpan=rpm;
 document.getElementById("rpm").innerText=rpm;
 document.getElementById("feed").innerText=feed;
 }
