@@ -119,10 +119,11 @@ fz = mm pr tand
 </div>
 </div>
 
-<!-- ZERO -->
 <div id="zero" class="hide">
 <input id="m1" placeholder="Måling 1">
 <input id="m2" placeholder="Måling 2">
+
+<button onclick="calcZero()">Beregn</button>
 
 <div class="result">
 Nul: <span id="zeroRes"></span>
@@ -236,27 +237,33 @@ document.getElementById("rpm").innerText=rpm;
 document.getElementById("feed").innerText=feed;
 }
 
-// ZERO med historik
-if(m1.value && m2.value){
-    let res = ((+m1.value + +m2.value)/2).toFixed(3);
-    zeroRes.innerText = res;
+function calcZero(){
 
-    let current = `${m1.value} + ${m2.value} = ${res}`;
+if(m1.value === "" || m2.value === "") return;
 
-    if(current !== lastZero){
-        lastZero = current;
+let v1 = parseFloat(m1.value);
+let v2 = parseFloat(m2.value);
 
-        let item = document.createElement("div");
-        item.className = "history-item";
-        item.innerText = current;
+if(isNaN(v1) || isNaN(v2)) return;
 
-        zeroHistory.prepend(item);
+let res = ((v1 + v2)/2).toFixed(3);
+zeroRes.innerText = res;
 
-        if(zeroHistory.children.length > 10){
-            zeroHistory.removeChild(zeroHistory.lastChild);
-        }
-    }
+let current = `${v1} + ${v2} = ${res}`;
+
+let item = document.createElement("div");
+item.className = "history-item";
+item.innerText = current;
+
+zeroHistory.prepend(item);
+
+// max 10
+if(zeroHistory.children.length > 10){
+    zeroHistory.removeChild(zeroHistory.lastChild);
 }
+
+}
+
 
 // TREKANT
 let a=parseFloat(ta.value);
