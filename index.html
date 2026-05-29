@@ -235,8 +235,26 @@ document.getElementById("rpm").innerText=rpm;
 document.getElementById("feed").innerText=feed;
 }
 
-if(m1.value&&m2.value){
-zeroRes.innerText=((+m1.value + +m2.value)/2).toFixed(3);
+// ZERO med historik
+if(m1.value && m2.value){
+    let res = ((+m1.value + +m2.value)/2).toFixed(3);
+    zeroRes.innerText = res;
+
+    let current = `${m1.value} + ${m2.value} = ${res}`;
+
+    if(current !== lastZero){
+        lastZero = current;
+
+        let item = document.createElement("div");
+        item.className = "history-item";
+        item.innerText = current;
+
+        zeroHistory.prepend(item);
+
+        if(zeroHistory.children.length > 10){
+            zeroHistory.removeChild(zeroHistory.lastChild);
+        }
+    }
 }
 
 // TREKANT
