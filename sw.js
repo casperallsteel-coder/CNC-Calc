@@ -1,4 +1,4 @@
-const CACHE_NAME = "cnc-pro-v1";
+const CACHE_NAME = "cnc-pro-v2";
 
 const urlsToCache = [
   "index.html",
