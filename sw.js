@@ -3,7 +3,8 @@ const CACHE_NAME = "cnc-pro-v1";
 const urlsToCache = [
   "index.html",
   "manifest.json",
-  "icon.png"
+  "icon192.png",
+  "icon512.png"
 ];
 
 self.addEventListener("install", event => {
