@@ -436,12 +436,39 @@ B: <span id="rB">-</span>
 
 <!-- ANILAM -->
 <div id="anilam" class="hide">
-<div class="input-group">
-  <label for="searchA">Søg Anilam kode</label>
-  <input id="searchA" placeholder="Søg..." onkeyup="showAnilam()">
+
+<div class="code-tabs">
+  <button onclick="switchAnilam('v')" style="background: #0366d6; color: white;">V-Koder</button>
+  <button onclick="switchAnilam('gm')" style="background: #f0f0f0; color: black;">G/M-Koder</button>
+  <button onclick="switchAnilam('aux')" style="background: #f0f0f0; color: black;">AUX</button>
 </div>
-<div id="alist"></div>
-<div id="detail" class="result"></div>
+
+<div id="vSection">
+  <div class="input-group">
+    <label for="searchV">Søg V-kode</label>
+    <input id="searchV" placeholder="Søg..." onkeyup="showVCodes()">
+  </div>
+  <div id="vlist"></div>
+</div>
+
+<div id="gmSection" class="hide">
+  <div class="input-group">
+    <label for="searchGMA">Søg G/M-kode</label>
+    <input id="searchGMA" placeholder="Søg..." onkeyup="showGMCodes()">
+  </div>
+  <div id="gmlist"></div>
+</div>
+
+<div id="auxSection" class="hide">
+  <div class="input-group">
+    <label for="searchAux">Søg AUX-kode</label>
+    <input id="searchAux" placeholder="Søg..." onkeyup="showAuxCodes()">
+  </div>
+  <div id="auxlist"></div>
+</div>
+
+<div id="anilam-detail" class="result"></div>
+
 </div>
 
 </div>
@@ -599,23 +626,101 @@ function showMCodes(){
   });
 }
 
-// ANILAM
-const anilam=[
-{code:"V02",desc:"X data",detail:"X position"},
-{code:"AUX 0003",desc:"Spindel",detail:"Start"}
+// ANILAM - V KODER
+const vCodes = [
+  {code:"V00",desc:"Program start",detail:"Starter program"},
+  {code:"V01",desc:"Samme position",detail:"Gentag sidste position"},
+  {code:"V02",desc:"X data",detail:"X position"},
+  {code:"V03",desc:"Y data",detail:"Y position"},
+  {code:"V04",desc:"Z data",detail:"Z position"},
+  {code:"V05",desc:"Feedrate",detail:"Indstil fremføring"},
+  {code:"V06",desc:"Tool call",detail:"Værktøj valg"},
+  {code:"V07",desc:"Tool offset",detail:"Korriger værktøj"},
+  {code:"V08",desc:"Radius comp",detail:"Radius kompensation"},
+  {code:"V09",desc:"Cancel comp",detail:"Fjern kompensation"}
 ];
 
-function showAnilam(){
-let s=searchA.value.toUpperCase();
-alist.innerHTML="";
-anilam.forEach(a=>{
-if(s && !a.code.toUpperCase().includes(s)) return;
-let d=document.createElement("div");
-d.className="code";
-d.innerText=a.code+" - "+a.desc;
-d.onclick=()=>detail.innerText=a.code+"\n"+a.detail;
-alist.appendChild(d);
-});
+// ANILAM - G/M KODER
+const gmAnilamCodes = [
+  {code:"G00",desc:"Rapid move",detail:"Hurtig positionering"},
+  {code:"G01",desc:"Lineær interpolation",detail:"Fremføring"},
+  {code:"G02",desc:"Cirkulær CW",detail:"Med uret"},
+  {code:"G03",desc:"Cirkulær CCW",detail:"Mod uret"},
+  {code:"M00",desc:"Stop",detail:"Program stop"},
+  {code:"M03",desc:"Spindel CW",detail:"Med uret"},
+  {code:"M04",desc:"Spindel CCW",detail:"Mod uret"},
+  {code:"M05",desc:"Spindel stop",detail:"Stop spindel"},
+  {code:"M06",desc:"Tool change",detail:"Værktøj skift"},
+  {code:"M08",desc:"Kølervæske ON",detail:"Tænd kølevæske"},
+  {code:"M09",desc:"Kølervæske OFF",detail:"Sluk kølevæske"},
+  {code:"M30",desc:"Program slut",detail:"Reset og stop"}
+];
+
+// ANILAM - AUX KODER
+const auxCodes = [
+  {code:"AUX 0001",desc:"Reset",detail:"Nulstil system"},
+  {code:"AUX 0002",desc:"Pause",detail:"Midlertidig stop"},
+  {code:"AUX 0003",desc:"Spindel start",detail:"Start spindel"},
+  {code:"AUX 0004",desc:"Spindel stop",detail:"Stop spindel"},
+  {code:"AUX 0005",desc:"Coolant",detail:"Kølervæske styring"}
+];
+
+function switchAnilam(tab) {
+  if(tab === 'v') {
+    document.getElementById('vSection').classList.remove('hide');
+    document.getElementById('gmSection').classList.add('hide');
+    document.getElementById('auxSection').classList.add('hide');
+    showVCodes();
+  } else if(tab === 'gm') {
+    document.getElementById('vSection').classList.add('hide');
+    document.getElementById('gmSection').classList.remove('hide');
+    document.getElementById('auxSection').classList.add('hide');
+    showGMCodes();
+  } else {
+    document.getElementById('vSection').classList.add('hide');
+    document.getElementById('gmSection').classList.add('hide');
+    document.getElementById('auxSection').classList.remove('hide');
+    showAuxCodes();
+  }
+}
+
+function showVCodes(){
+  let s=searchV.value.toUpperCase();
+  vlist.innerHTML="";
+  vCodes.forEach(v=>{
+    if(s && !v.code.toUpperCase().includes(s) && !v.desc.toUpperCase().includes(s) && !v.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=v.code+" - "+v.desc;
+    d.onclick=()=>document.getElementById('anilam-detail').innerText=v.code+"\n"+v.desc+"\n"+v.detail;
+    vlist.appendChild(d);
+  });
+}
+
+function showGMCodes(){
+  let s=searchGMA.value.toUpperCase();
+  gmlist.innerHTML="";
+  gmAnilamCodes.forEach(gm=>{
+    if(s && !gm.code.toUpperCase().includes(s) && !gm.desc.toUpperCase().includes(s) && !gm.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=gm.code+" - "+gm.desc;
+    d.onclick=()=>document.getElementById('anilam-detail').innerText=gm.code+"\n"+gm.desc+"\n"+gm.detail;
+    gmlist.appendChild(d);
+  });
+}
+
+function showAuxCodes(){
+  let s=searchAux.value.toUpperCase();
+  auxlist.innerHTML="";
+  auxCodes.forEach(aux=>{
+    if(s && !aux.code.toUpperCase().includes(s) && !aux.desc.toUpperCase().includes(s) && !aux.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=aux.code+" - "+aux.desc;
+    d.onclick=()=>document.getElementById('anilam-detail').innerText=aux.code+"\n"+aux.desc+"\n"+aux.detail;
+    auxlist.appendChild(d);
+  });
 }
 
 // CALC
@@ -700,7 +805,7 @@ function showTab(t){
     document.getElementById(id).classList.toggle("hide",id!==t);
   });
   if(t==="g") switchCodeTab('g');
-  if(t==="anilam") showAnilam();
+  if(t==="anilam") switchAnilam('v');
 }
 
 // INIT
