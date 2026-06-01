@@ -17,7 +17,8 @@ body {font-family: Arial; margin:0; background:#f5f5f5;}
 .tabs {display:flex; gap:5px; margin-bottom:10px;}
 button {flex:1; padding:10px;}
 input,select {width:100%; padding:10px; margin-bottom:8px; box-sizing:border-box;}
-.input-group label {font-size:12px; font-weight:bold;}
+.input-group {margin-bottom:10px;}
+.input-group label {font-size:12px; font-weight:bold; display:block; margin-bottom:4px; color:#333;}
 .result {background:#eee; padding:10px; white-space:pre-wrap;}
 .help-box {background:#eef6ff; padding:10px; font-size:13px; margin-bottom:10px;}
 .code {border-bottom:1px solid #ddd; padding:8px; cursor:pointer;}
@@ -77,21 +78,42 @@ input,select {width:100%; padding:10px; margin-bottom:8px; box-sizing:border-box
 
 <!-- CALC -->
 <div id="calc">
-<input id="diameter" value="10">
-<select id="material" onchange="updateVC()">
-<option value="rustfri">Rustfri</option>
-<option value="alu">Alu</option>
-<option value="jern">Jern</option>
-</select>
+<div class="input-group">
+  <label>Diameter (mm)</label>
+  <input id="diameter" value="10">
+</div>
 
-<select id="tool" onchange="updateVC()">
-<option value="HM">HM</option>
-<option value="HSS">HSS</option>
-</select>
+<div class="input-group">
+  <label>Materiale</label>
+  <select id="material" onchange="updateVC()">
+    <option value="rustfri">Rustfri</option>
+    <option value="alu">Alu</option>
+    <option value="jern">Jern</option>
+  </select>
+</div>
 
-<input id="vc">
-<input id="teeth" value="4">
-<input id="fz" value="0.05">
+<div class="input-group">
+  <label>Værktøj type</label>
+  <select id="tool" onchange="updateVC()">
+    <option value="HM">HM</option>
+    <option value="HSS">HSS</option>
+  </select>
+</div>
+
+<div class="input-group">
+  <label>VC (m/min)</label>
+  <input id="vc">
+</div>
+
+<div class="input-group">
+  <label>Antal tænder</label>
+  <input id="teeth" value="4">
+</div>
+
+<div class="input-group">
+  <label>fz (mm pr tand)</label>
+  <input id="fz" value="0.05">
+</div>
 
 <div class="result">
 RPM: <span id="rpm"></span><br>
@@ -120,8 +142,15 @@ fz = mm pr tand
 </div>
 
 <div id="zero" class="hide">
-<input id="m1" placeholder="Måling 1">
-<input id="m2" placeholder="Måling 2">
+<div class="input-group">
+  <label>Måling 1</label>
+  <input id="m1" placeholder="Første værdi">
+</div>
+
+<div class="input-group">
+  <label>Måling 2</label>
+  <input id="m2" placeholder="Anden værdi">
+</div>
 
 <button onclick="calcZero()">Beregn</button>
 
@@ -137,7 +166,10 @@ Nul: <span id="zeroRes"></span>
 
 <!-- G -->
 <div id="g" class="hide">
-<input id="searchG" placeholder="Søg..." onkeyup="showGCodes()">
+<div class="input-group">
+  <label>Søg G-kode</label>
+  <input id="searchG" placeholder="Søg..." onkeyup="showGCodes()">
+</div>
 <div id="glist"></div>
 <div id="gdetail" class="result"></div>
 </div>
@@ -146,16 +178,35 @@ Nul: <span id="zeroRes"></span>
 <div id="tri" class="hide">
 
 <div class="help-box">
-<b>Trekant</b><br>
-Indtast 2 værdier.<br>
+<b>Trekant beregner</b><br>
+Indtast 2 værdier for at beregne resten.<br>
 TIP: c + A → finder begge kateter
 </div>
 
-<input id="ta" placeholder="a">
-<input id="tb" placeholder="b">
-<input id="tc" placeholder="c">
-<input id="tA" placeholder="vinkel A">
-<input id="tB" placeholder="vinkel B">
+<div class="input-group">
+  <label>Side a</label>
+  <input id="ta" placeholder="a">
+</div>
+
+<div class="input-group">
+  <label>Side b</label>
+  <input id="tb" placeholder="b">
+</div>
+
+<div class="input-group">
+  <label>Hypotenuse c</label>
+  <input id="tc" placeholder="c">
+</div>
+
+<div class="input-group">
+  <label>Vinkel A (°)</label>
+  <input id="tA" placeholder="vinkel A">
+</div>
+
+<div class="input-group">
+  <label>Vinkel B (°)</label>
+  <input id="tB" placeholder="vinkel B">
+</div>
 
 <div class="result">
 a: <span id="ra"></span><br>
@@ -168,7 +219,10 @@ B: <span id="rB"></span>
 
 <!-- ANILAM -->
 <div id="anilam" class="hide">
-<input id="searchA" placeholder="Søg..." onkeyup="showAnilam()">
+<div class="input-group">
+  <label>Søg Anilam kode</label>
+  <input id="searchA" placeholder="Søg..." onkeyup="showAnilam()">
+</div>
 <div id="alist"></div>
 <div id="detail" class="result"></div>
 </div>
