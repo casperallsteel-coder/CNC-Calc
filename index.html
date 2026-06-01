@@ -198,6 +198,18 @@ select {
   border-radius: 2px;
 }
 
+.code-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.code-tabs button {
+  flex: 0 1 auto;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
 @media (max-width: 480px) {
   .header {
     padding: 8px;
@@ -351,14 +363,32 @@ Nul: <span id="zeroRes">-</span>
 </div>
 </div>
 
-<!-- G -->
+<!-- G/M KODER -->
 <div id="g" class="hide">
-<div class="input-group">
-  <label for="searchG">Søg G-kode</label>
-  <input id="searchG" placeholder="Søg..." onkeyup="showGCodes()">
+
+<div class="code-tabs">
+  <button onclick="switchCodeTab('g')" style="background: #0366d6; color: white;">G-Koder</button>
+  <button onclick="switchCodeTab('m')" style="background: #f0f0f0; color: black;">M-Koder</button>
 </div>
-<div id="glist"></div>
-<div id="gdetail" class="result"></div>
+
+<div id="gSection">
+  <div class="input-group">
+    <label for="searchG">Søg G-kode</label>
+    <input id="searchG" placeholder="Søg..." onkeyup="showGCodes()">
+  </div>
+  <div id="glist"></div>
+</div>
+
+<div id="mSection" class="hide">
+  <div class="input-group">
+    <label for="searchM">Søg M-kode</label>
+    <input id="searchM" placeholder="Søg..." onkeyup="showMCodes()">
+  </div>
+  <div id="mlist"></div>
+</div>
+
+<div id="codedetail" class="result"></div>
+
 </div>
 
 <!-- TREKANT -->
@@ -418,26 +448,155 @@ B: <span id="rB">-</span>
 
 <script>
 
-// FANUC
+// FANUC - G KODER (Komplet liste)
 const gCodes = [
-{code:"G40",desc:"Cancel radius comp",detail:"Sluk radius komp"},
-{code:"G41",desc:"Radius komp venstre",detail:"Venstre side"},
-{code:"G42",desc:"Radius komp højre",detail:"Højre side"},
-{code:"G00",desc:"Rapid",detail:"Hurtig"},
-{code:"G01",desc:"Lineær",detail:"Feed"}
+  // Hurtig positionering og lineær
+  {code:"G00",desc:"Rapid",detail:"Hurtig positionering"},
+  {code:"G01",desc:"Lineær",detail:"Feed - lineær bevægelse"},
+  
+  // Cirkulær interpolation
+  {code:"G02",desc:"Cirkulær CW",detail:"Med uret"},
+  {code:"G03",desc:"Cirkulær CCW",detail:"Mod uret"},
+  
+  // Plane og koordinatsystem
+  {code:"G17",desc:"X-Y plan",detail:"Planvalg"},
+  {code:"G18",desc:"Z-X plan",detail:"Planvalg"},
+  {code:"G19",desc:"Y-Z plan",detail:"Planvalg"},
+  
+  // Enheder
+  {code:"G20",desc:"Inches",detail:"Tommer"},
+  {code:"G21",desc:"Millimeter",detail:"Metrisk"},
+  
+  // Dwell og hjem
+  {code:"G04",desc:"Dwell",detail:"Pause/ventetid"},
+  {code:"G28",desc:"Hjem position",detail:"Vendt til hjem"},
+  {code:"G30",desc:"2. hjem",detail:"Anden hjem position"},
+  
+  // Radius kompensation
+  {code:"G40",desc:"Cancel radius comp",detail:"Sluk radius komp"},
+  {code:"G41",desc:"Radius komp venstre",detail:"Venstre side"},
+  {code:"G42",desc:"Radius komp højre",detail:"Højre side"},
+  
+  // Værktøj længde kompensation
+  {code:"G43",desc:"Tool length +",detail:"Værktøj længde +"},
+  {code:"G44",desc:"Tool length -",detail:"Værktøj længde -"},
+  {code:"G49",desc:"Cancel tool comp",detail:"Sluk værktøj komp"},
+  
+  // Hullecyklusser
+  {code:"G80",desc:"Cancel cycle",detail:"Sluk cyklus"},
+  {code:"G81",desc:"Boring",detail:"Borecyklus"},
+  {code:"G82",desc:"Boring med dwell",detail:"Boring med pause"},
+  {code:"G83",desc:"Peck boring",detail:"Tryk boring"},
+  {code:"G84",desc:"Tapping",detail:"Gevindskæring"},
+  {code:"G85",desc:"Boring finishing",detail:"Præcisions boring"},
+  
+  // Programmering
+  {code:"G90",desc:"Absolut",detail:"Absolut koordinater"},
+  {code:"G91",desc:"Inkremental",detail:"Relative koordinater"},
+  
+  // Feed type
+  {code:"G94",desc:"Feed/min",detail:"Fremførsel pr minut"},
+  {code:"G95",desc:"Feed/rpm",detail:"Fremførsel pr omdrejning"},
+  
+  // Thread cutting
+  {code:"G33",desc:"Thread cut",detail:"Gevindskæring"},
+  
+  // Koordinatsystem
+  {code:"G53",desc:"Maskine koord",detail:"Machine coordinates"},
+  {code:"G54",desc:"Work offset 1",detail:"Arbejdskoordinat 1"},
+  {code:"G55",desc:"Work offset 2",detail:"Arbejdskoordinat 2"},
+  {code:"G56",desc:"Work offset 3",detail:"Arbejdskoordinat 3"},
+  {code:"G57",desc:"Work offset 4",detail:"Arbejdskoordinat 4"},
+  {code:"G58",desc:"Work offset 5",detail:"Arbejdskoordinat 5"},
+  {code:"G59",desc:"Work offset 6",detail:"Arbejdskoordinat 6"},
+  
+  // Canned cycle returns
+  {code:"G98",desc:"Return initial",detail:"Vendt til startpunkt"},
+  {code:"G99",desc:"Return reference",detail:"Vendt til referencepunkt"},
+  
+  // Yderligere G-koder
+  {code:"G10",desc:"Parameter setting",detail:"Parameter indstilling"},
+  {code:"G96",desc:"Constant speed",detail:"Konstant overfladehastighed"},
+  {code:"G97",desc:"Spindle RPM",detail:"Spindel omdrejninger"}
 ];
 
+// FANUC - M KODER (Komplet liste)
+const mCodes = [
+  // Spindle
+  {code:"M03",desc:"Spindle ON CW",detail:"Spindel med uret"},
+  {code:"M04",desc:"Spindle ON CCW",detail:"Spindel mod uret"},
+  {code:"M05",desc:"Spindle STOP",detail:"Spindel stop"},
+  
+  // Program control
+  {code:"M00",desc:"Program stop",detail:"Program pause"},
+  {code:"M01",desc:"Optional stop",detail:"Betinget pause"},
+  {code:"M02",desc:"Program end",detail:"Program slutning"},
+  {code:"M30",desc:"Program end rewind",detail:"Program slutning + genstart"},
+  
+  // Tool change
+  {code:"M06",desc:"Tool change",detail:"Værktøj skift"},
+  
+  // Coolant
+  {code:"M08",desc:"Coolant ON",detail:"Kølevæske til"},
+  {code:"M09",desc:"Coolant OFF",detail:"Kølevæske fra"},
+  
+  // Chuck (lathe)
+  {code:"M10",desc:"Chuck clamp",detail:"Spændebakke lukket"},
+  {code:"M11",desc:"Chuck unclamp",detail:"Spændebakke åben"},
+  
+  // Tailstock (lathe)
+  {code:"M17",desc:"Tailstock advance",detail:"Løbespids fremad"},
+  {code:"M18",desc:"Tailstock retract",detail:"Løbespids tilbage"},
+  {code:"M21",desc:"Tailstock forward",detail:"Løbespids fremad"},
+  {code:"M22",desc:"Tailstock backward",detail:"Løbespids tilbage"},
+  
+  // Spindle orientation
+  {code:"M19",desc:"Spindle orient",detail:"Spindel orientering"},
+  
+  // Gear ranges
+  {code:"M41",desc:"Gear low",detail:"Gear lav"},
+  {code:"M42",desc:"Gear high",detail:"Gear høj"},
+  {code:"M43",desc:"Gear range 3",detail:"Gear område 3"},
+  {code:"M44",desc:"Gear range 4",detail:"Gear område 4"},
+  {code:"M45",desc:"Gear range 5",detail:"Gear område 5"}
+];
+
+function switchCodeTab(tab) {
+  if(tab === 'g') {
+    document.getElementById('gSection').classList.remove('hide');
+    document.getElementById('mSection').classList.add('hide');
+    showGCodes();
+  } else {
+    document.getElementById('gSection').classList.add('hide');
+    document.getElementById('mSection').classList.remove('hide');
+    showMCodes();
+  }
+}
+
 function showGCodes(){
-let s=searchG.value.toUpperCase();
-glist.innerHTML="";
-gCodes.forEach(g=>{
-if(s && !g.code.toUpperCase().includes(s) && !g.desc.toUpperCase().includes(s)) return;
-let d=document.createElement("div");
-d.className="code";
-d.innerText=g.code+" - "+g.desc;
-d.onclick=()=>gdetail.innerText=g.code+"\n"+g.detail;
-glist.appendChild(d);
-});
+  let s=searchG.value.toUpperCase();
+  glist.innerHTML="";
+  gCodes.forEach(g=>{
+    if(s && !g.code.toUpperCase().includes(s) && !g.desc.toUpperCase().includes(s) && !g.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=g.code+" - "+g.desc;
+    d.onclick=()=>codedetail.innerText=g.code+"\n"+g.desc+"\n"+g.detail;
+    glist.appendChild(d);
+  });
+}
+
+function showMCodes(){
+  let s=searchM.value.toUpperCase();
+  mlist.innerHTML="";
+  mCodes.forEach(m=>{
+    if(s && !m.code.toUpperCase().includes(s) && !m.desc.toUpperCase().includes(s) && !m.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=m.code+" - "+m.desc;
+    d.onclick=()=>codedetail.innerText=m.code+"\n"+m.desc+"\n"+m.detail;
+    mlist.appendChild(d);
+  });
 }
 
 // ANILAM
@@ -540,7 +699,7 @@ function showTab(t){
   ["calc","zero","g","anilam","tri"].forEach(id=>{
     document.getElementById(id).classList.toggle("hide",id!==t);
   });
-  if(t==="g") showGCodes();
+  if(t==="g") switchCodeTab('g');
   if(t==="anilam") showAnilam();
 }
 
