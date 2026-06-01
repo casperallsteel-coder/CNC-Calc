@@ -372,22 +372,22 @@ TIP: c + A → finder begge kateter
 
 <div class="input-group">
   <label for="ta">Side a</label>
-  <input id="ta" placeholder="a" type="number" step="0.001">
+  <input id="ta" placeholder="a" type="number" step="0.001" oninput="updateTriangle()">
 </div>
 
 <div class="input-group">
   <label for="tb">Side b</label>
-  <input id="tb" placeholder="b" type="number" step="0.001">
+  <input id="tb" placeholder="b" type="number" step="0.001" oninput="updateTriangle()">
 </div>
 
 <div class="input-group">
   <label for="tc">Hypotenuse c</label>
-  <input id="tc" placeholder="c" type="number" step="0.001">
+  <input id="tc" placeholder="c" type="number" step="0.001" oninput="updateTriangle()">
 </div>
 
 <div class="input-group">
   <label for="tA">Vinkel A (°)</label>
-  <input id="tA" placeholder="vinkel A" type="number" step="0.1">
+  <input id="tA" placeholder="vinkel A" type="number" step="0.1" oninput="updateTriangle()">
 </div>
 
 <div class="input-group">
@@ -463,91 +463,97 @@ alist.appendChild(d);
 const vcTable={rustfri:{HM:80,HSS:20},alu:{HM:300,HSS:80},jern:{HM:120,HSS:25}};
 function updateVC(){vc.value=vcTable[material.value][tool.value];}
 
-let lastZero = "";
+// CALC - Real-time RPM/Feed update
+function updateCalc(){
+  let d=+diameter.value;
+  let v=+vc.value;
+  let z=+teeth.value;
+  let fzv=+fz.value;
   
-setInterval(()=>{
-let d=+diameter.value;
-let v=+vc.value;
-let z=+teeth.value;
-let fzv=+fz.value;
-
-if(d&&v){
-let rpm=Math.round((v*1000)/(Math.PI*d));
-let feed=Math.round(rpm*z*fzv);
-document.getElementById("rpm").innerText=rpm;
-document.getElementById("feed").innerText=feed;
+  if(d&&v){
+    let rpm=Math.round((v*1000)/(Math.PI*d));
+    let feed=Math.round(rpm*z*fzv);
+    document.getElementById("rpm").innerText=rpm;
+    document.getElementById("feed").innerText=feed;
+  }
 }
 
+// ZERO - Calculate zero offset
 function calcZero(){
-
-if(m1.value === "" || m2.value === "") return;
-
-let v1 = parseFloat(m1.value);
-let v2 = parseFloat(m2.value);
-
-if(isNaN(v1) || isNaN(v2)) return;
-
-let res = ((v1 + v2)/2).toFixed(3);
-zeroRes.innerText = res;
-
-let current = `${v1} + ${v2} = ${res}`;
-
-let item = document.createElement("div");
-item.className = "history-item";
-item.innerText = current;
-
-zeroHistory.prepend(item);
-
-// max 10
-if(zeroHistory.children.length > 10){
+  if(m1.value === "" || m2.value === "") return;
+  
+  let v1 = parseFloat(m1.value);
+  let v2 = parseFloat(m2.value);
+  
+  if(isNaN(v1) || isNaN(v2)) return;
+  
+  let res = ((v1 + v2)/2).toFixed(3);
+  zeroRes.innerText = res;
+  
+  let current = `${v1} + ${v2} = ${res}`;
+  
+  let item = document.createElement("div");
+  item.className = "history-item";
+  item.innerText = current;
+  
+  zeroHistory.prepend(item);
+  
+  if(zeroHistory.children.length > 10){
     zeroHistory.removeChild(zeroHistory.lastChild);
+  }
 }
 
+// TRIANGLE - Calculate triangle values
+function updateTriangle(){
+  let a=parseFloat(ta.value);
+  let b=parseFloat(tb.value);
+  let c=parseFloat(tc.value);
+  let A=parseFloat(tA.value);
+  
+  // Pythagoras
+  if(a&&b&&!c){rc.innerText=Math.sqrt(a*a+b*b).toFixed(3);}
+  if(b&&c&&!a){ra.innerText=Math.sqrt(c*c-b*b).toFixed(3);}
+  if(a&&c&&!b){rb.innerText=Math.sqrt(c*c-a*a).toFixed(3);}
+  
+  // vinkler
+  if(a&&b){
+    let AA=Math.atan(a/b)*(180/Math.PI);
+    rA.innerText=AA.toFixed(2);
+    rB.innerText=(90-AA).toFixed(2);
+  }
+  
+  if(c&&A&&!a){
+    let rad=A*Math.PI/180;
+    ra.innerText=(Math.sin(rad)*c).toFixed(3);
+    rb.innerText=(Math.cos(rad)*c).toFixed(3);
+  }
 }
 
-
-// TREKANT
-let a=parseFloat(ta.value);
-let b=parseFloat(tb.value);
-let c=parseFloat(tc.value);
-let A=parseFloat(tA.value);
-
-// Pythagoras
-if(a&&b&&!c){rc.innerText=Math.sqrt(a*a+b*b).toFixed(3);}
-if(b&&c&&!a){ra.innerText=Math.sqrt(c*c-b*b).toFixed(3);}
-if(a&&c&&!b){rb.innerText=Math.sqrt(c*c-a*a).toFixed(3);}
-
-// vinkler
-if(a&&b){
-let AA=Math.atan(a/b)*(180/Math.PI);
-rA.innerText=AA.toFixed(2);
-rB.innerText=(90-AA).toFixed(2);
-}
-
-if(c&&A&&!a){
-let rad=A*Math.PI/180;
-ra.innerText=(Math.sin(rad)*c).toFixed(3);
-rb.innerText=(Math.cos(rad)*c).toFixed(3);
-}
-
-},200);
+// Add event listeners for live updates
+document.getElementById('diameter').addEventListener('input', updateCalc);
+document.getElementById('vc').addEventListener('input', updateCalc);
+document.getElementById('teeth').addEventListener('input', updateCalc);
+document.getElementById('fz').addEventListener('input', updateCalc);
 
 // TABS
 function showTab(t){
-["calc","zero","g","anilam","tri"].forEach(id=>{
-document.getElementById(id).classList.toggle("hide",id!==t);
-});
-if(t==="g") showGCodes();
-if(t==="anilam") showAnilam();
+  ["calc","zero","g","anilam","tri"].forEach(id=>{
+    document.getElementById(id).classList.toggle("hide",id!==t);
+  });
+  if(t==="g") showGCodes();
+  if(t==="anilam") showAnilam();
 }
 
 // INIT
 updateVC();
+updateCalc();
 showGCodes();
   
 // PWA INSTALL
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
+  navigator.serviceWorker.register("sw.js").catch(err => {
+    console.log("Service Worker registration failed:", err);
+  });
 }
 
 </script>
