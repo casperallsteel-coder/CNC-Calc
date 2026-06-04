@@ -733,7 +733,10 @@ function showAuxCodes(){
 
 // CALC
 const vcTable={rustfri:{HM:80,HSS:20},alu:{HM:300,HSS:80},jern:{HM:120,HSS:25}};
-function updateVC(){vc.value=vcTable[material.value][tool.value];}
+function updateVC(){
+  vc.value = vcTable[material.value][tool.value];
+  updateCalc();
+}
 
 // CALC - Real-time RPM/Feed update
 function updateCalc(){
@@ -818,7 +821,7 @@ if(isNaN(b)) b=parseFloat(tb.value);
 if(isNaN(c)) c=parseFloat(tc.value);
   // ✅ nu virker den!
   
-if(!isNaN(a) && !isNaN(b) && !isNaN(c)){
+if(!isNaN(a) && !isNaN(b) && !isNaN(c) && a > 0 && b > 0 && c > 0){
   drawTriangle(a,b,c);
 }
 
