@@ -871,6 +871,23 @@ let x3=x1+Math.cos(C*Math.PI/180)*c*scale;
 let y3=y1-Math.sin(C*Math.PI/180)*c*scale;
 
 // tegn
+function drawTriangle(a,b,c){
+
+let canvas = document.getElementById("triCanvas");
+let ctx = canvas.getContext("2d");
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+// --- scale ---
+let max = Math.max(a,b,c);
+let scale = 200 / max;
+
+// --- punkter (retvinklet korrekt) ---
+let x1 = 60, y1 = 250;          // nederste venstre
+let x2 = x1 + b*scale, y2 = y1; // bund
+let x3 = x1, y3 = y1 - a*scale; // lodret
+
+// --- tegn trekant ---
 ctx.beginPath();
 ctx.moveTo(x1,y1);
 ctx.lineTo(x2,y2);
@@ -881,30 +898,32 @@ ctx.strokeStyle="#0366d6";
 ctx.lineWidth=2;
 ctx.stroke();
 
-// tekst sider
-ctx.fillStyle="black";
-ctx.font="12px Arial";
+// --- beregn vinkler ---
+let A = Math.atan(a/b)*(180/Math.PI);
+let B = 90 - A;
+let C = 90;
 
-// b = bund
+// --- labels sider ---
+// b
 ctx.fillText(`b=${b.toFixed(1)}`, (x1+x2)/2, y1+15);
 
-// a = lodret side
+// a
 ctx.fillText(`a=${a.toFixed(1)}`, x1-30, (y1+y3)/2);
 
-// c = hypotenuse (den skrå!!)
+// c (hypotenuse)
 ctx.fillText(`c=${c.toFixed(1)}`, (x2+x3)/2, (y2+y3)/2);
 
-// vinkler
+// --- vinkler ---
 ctx.fillStyle="red";
-// C = ret vinkel (ved x1)
-ctx.fillText(C.toFixed(1)+"°", x1-25, y1-5);
 
-// B = nederst højre
-ctx.fillText(B.toFixed(1)+"°", x2+5, y2);
+// ret vinkel
+ctx.fillText(`${C.toFixed(0)}°`, x1-25, y1-5);
 
-// A = toppen
-ctx.fillText(A.toFixed(1)+"°", x3, y3-5);
-}
+// B
+ctx.fillText(`${B.toFixed(1)}°`, x2+5, y2);
+
+// A
+
 </script>
 
 </body>
