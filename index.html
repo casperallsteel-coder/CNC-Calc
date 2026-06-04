@@ -818,7 +818,7 @@ if(isNaN(b)) b=parseFloat(tb.value);
 if(isNaN(c)) c=parseFloat(tc.value);
   // ✅ nu virker den!
   
-f(!isNaN(a) && !isNaN(b) && !isNaN(c)){
+if(!isNaN(a) && !isNaN(b) && !isNaN(c)){
   drawTriangle(a,b,c);
 }
 
