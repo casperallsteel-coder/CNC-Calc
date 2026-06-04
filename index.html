@@ -1,39 +1,266 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-<link rel="apple-touch-icon" href="icon192.png">
-<link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon192.png">
+  <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <title>CNC PRO Tool</title>
 
 <style>
-body {font-family:Arial; margin:0; background:#f5f5f5;}
-.header {background:#0366d6; color:white; padding:10px; text-align:center;}
-.container {max-width:500px; margin:auto; padding:10px;}
+* {
+  box-sizing: border-box;
+}
 
-.tabs {display:flex; gap:5px; margin-bottom:10px;}
-button {flex:1; padding:10px;}
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
 
-input,select {
-  width:100%;
+body {
+  background:#f5f5f5;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  background:#0366d6;
+  color:white;
   padding:10px;
-  margin-bottom:8px;
+  text-align:center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header img {
+  max-height:50px;
+  display:block;
+  margin:auto;
+  width: auto;
+}
+
+.header h1 {
+  margin: 4px 0 0 0;
+  font-size:18px;
+}
+
+.container {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  margin-top: 100px;
+  overflow-x: hidden;
+}
+
+.tabs {
+  display:flex;
+  gap:3px;
+  margin-bottom:10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+button {
+  flex: 1;
+  min-width: 70px;
+  padding:10px 8px;
+  white-space: nowrap;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+button:active {
+  background: #0366d6;
+  color: white;
+}
+
+input, select {
+  width:100%;
+  padding:12px;
+  margin-bottom:0;
   box-sizing:border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 35px;
+  background-color: white;
+}
+
+.input-group {
+  margin-bottom:14px;
+  display:flex;
+  flex-direction:column;
+}
+
+.input-group label {
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:6px;
+  color:#333;
+}
+
+.input-group input, .input-group select {
+  margin-bottom:0;
 }
 
 .result {
   background:#eee;
-  padding:10px;
+  padding:12px;
+  white-space:pre-wrap;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #0366d6;
+  margin-top: 10px;
 }
 
-.hide {display:none;}
+.help-box {
+  background:#eef6ff;
+  padding:10px;
+  font-size:12px;
+  margin-bottom:10px;
+  border-radius: 4px;
+  border-left: 3px solid #0366d6;
+}
 
-canvas {
+.code {
+  border-bottom:1px solid #ddd;
+  padding:10px;
+  cursor:pointer;
+  background: white;
+  margin-bottom: 4px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.code:active {
+  background: #f0f0f0;
+}
+
+.hide {
+  display:none !important;
+}
+  
+.info-box {
+    background:#ffe69c;
+    border:1px solid #ffcd39;
+    padding:12px;
+    font-size:12px;
+    line-height:1.6;
+    margin-top:10px;
+    border-radius:4px;
+}
+
+.info-box b {
+    display:block;
+    margin-top:8px;
+    color:#664d03;
+    font-size: 13px;
+}
+
+.formula {
+    background:white;
+    padding:8px;
+    margin:6px 0;
+    border-left:3px solid #0366d6;
+    font-family:monospace;
+    font-size:12px;
+    border-radius: 2px;
+    overflow-x: auto;
+}
+
+.history-item {
   background:white;
-  margin-top:10px;
-  border-radius:4px;
+  padding:8px;
+  margin-top:6px;
+  border-left:3px solid #0366d6;
+  font-size:12px;
+  border-radius: 2px;
+}
+
+.code-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.code-tabs button {
+  flex: 0 1 auto;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 8px;
+    position: sticky;
+  }
+
+  .header h1 {
+    font-size: 16px;
+  }
+
+  .container {
+    margin-top: 0;
+    padding: 8px;
+  }
+
+  .tabs {
+    gap: 2px;
+  }
+
+  button {
+    min-width: 60px;
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+
+  input, select {
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .input-group {
+    margin-bottom: 12px;
+  }
+
+  .input-group label {
+    font-size: 12px;
+  }
+}
+
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 </style>
 </head>
@@ -41,7 +268,8 @@ canvas {
 <body>
 
 <div class="header">
-<h2>CNC PRO</h2>
+<img src="All-Steel_web.png" alt="All-Steel logo">
+<h1>CNC PRO</h1>
 </div>
 
 <div class="container">
@@ -49,53 +277,204 @@ canvas {
 <div class="tabs">
 <button onclick="showTab('calc')">Calc</button>
 <button onclick="showTab('zero')">Zero</button>
+<button onclick="showTab('g')">G/M</button>
+<button onclick="showTab('anilam')">Anilam</button>
 <button onclick="showTab('tri')">Trekant</button>
 </div>
 
 <!-- CALC -->
 <div id="calc">
-<input id="diameter" value="10">
-<input id="vc" value="100">
-<input id="teeth" value="4">
-<input id="fz" value="0.05">
+<div class="input-group">
+  <label for="diameter">Diameter (mm)</label>
+  <input id="diameter" value="10" type="number" step="0.1" min="0">
+</div>
+
+<div class="input-group">
+  <label for="material">Materiale</label>
+  <select id="material" onchange="updateVC()">
+    <option value="rustfri">Rustfri</option>
+    <option value="alu">Alu</option>
+    <option value="jern">Jern</option>
+  </select>
+</div>
+
+<div class="input-group">
+  <label for="tool">Værktøj type</label>
+  <select id="tool" onchange="updateVC()">
+    <option value="HM">HM</option>
+    <option value="HSS">HSS</option>
+  </select>
+</div>
+
+<div class="input-group">
+  <label for="vc">VC (m/min) - Skærehastighed</label>
+  <input id="vc" type="number" step="0.1" min="0">
+</div>
+
+<div class="input-group">
+  <label for="teeth">Antal tænder</label>
+  <input id="teeth" value="4" type="number" step="1" min="1">
+</div>
+
+<div class="input-group">
+  <label for="fz">fz (mm pr tand)</label>
+  <input id="fz" value="0.05" type="number" step="0.01" min="0">
+</div>
 
 <div class="result">
-RPM: <span id="rpm"></span><br>
-Feed: <span id="feed"></span>
+RPM: <span id="rpm">-</span><br>
+Feed: <span id="feed">-</span>
+</div>
+  <div class="info-box">
+<b>📚 Sådan beregnes værdierne:</b>
+
+<b>RPM (Spindelhastighed):</b>
+<div class="formula">
+RPM = (VC × 1000) / (π × Diameter)
+</div>
+
+VC = skærehastighed i m/min
+
+<b>Feed (Fremførsel):</b>
+<div class="formula">
+Feed = RPM × Tænder × fz
+</div>
+
+fz = mm pr tand
+
+<b>Eksempel:</b>
+Ø10 mm HM værktøj i rustfri → giver korrekt RPM og feed.
 </div>
 </div>
 
-<!-- ZERO -->
 <div id="zero" class="hide">
-<input id="m1" placeholder="Måling 1">
-<input id="m2" placeholder="Måling 2">
-
-<button onclick="calcZero()">Beregn</button>
-
-<div class="result">
-Nul: <span id="zeroRes"></span>
+<div class="input-group">
+  <label for="m1">Måling 1</label>
+  <input id="m1" placeholder="Første værdi" type="number" step="0.001">
 </div>
 
+<div class="input-group">
+  <label for="m2">Måling 2</label>
+  <input id="m2" placeholder="Anden værdi" type="number" step="0.001">
+</div>
+
+<button onclick="calcZero()" style="margin-bottom: 10px; padding: 12px; background: #0366d6; color: white; font-weight: bold; border: none; border-radius: 4px;">Beregn</button>
+
+<div class="result">
+Nul: <span id="zeroRes">-</span>
+</div>
+
+<div class="info-box">
+<b>Historik:</b>
 <div id="zeroHistory"></div>
+</div>
+</div>
+
+<!-- G/M KODER -->
+<div id="g" class="hide">
+
+<div class="code-tabs">
+  <button onclick="switchCodeTab('g')" style="background: #0366d6; color: white;">G-Koder</button>
+  <button onclick="switchCodeTab('m')" style="background: #f0f0f0; color: black;">M-Koder</button>
+</div>
+
+<div id="gSection">
+  <div class="input-group">
+    <label for="searchG">Søg G-kode</label>
+    <input id="searchG" placeholder="Søg..." onkeyup="showGCodes()">
+  </div>
+  <div id="glist"></div>
+</div>
+
+<div id="mSection" class="hide">
+  <div class="input-group">
+    <label for="searchM">Søg M-kode</label>
+    <input id="searchM" placeholder="Søg..." onkeyup="showMCodes()">
+  </div>
+  <div id="mlist"></div>
+</div>
+
+<div id="codedetail" class="result"></div>
+
 </div>
 
 <!-- TREKANT -->
 <div id="tri" class="hide">
 
-<input id="ta" placeholder="a" oninput="updateTriangle()">
-<input id="tb" placeholder="b" oninput="updateTriangle()">
-<input id="tc" placeholder="c" oninput="updateTriangle()">
-<input id="tA" placeholder="vinkel A" oninput="updateTriangle()">
+<div class="help-box">
+<b>Trekant beregner</b><br>
+Indtast 2 værdier for at beregne resten.<br>
+TIP: c + A → finder begge kateter
+</div>
+
+<div class="input-group">
+  <label for="ta">Side a</label>
+  <input id="ta" placeholder="a" type="number" step="0.001" oninput="updateTriangle()">
+</div>
+
+<div class="input-group">
+  <label for="tb">Side b</label>
+  <input id="tb" placeholder="b" type="number" step="0.001" oninput="updateTriangle()">
+</div>
+
+<div class="input-group">
+  <label for="tc">Hypotenuse c</label>
+  <input id="tc" placeholder="c" type="number" step="0.001" oninput="updateTriangle()">
+</div>
+
+<div class="input-group">
+  <label for="tA">Vinkel A (°)</label>
+  <input id="tA" placeholder="vinkel A" type="number" step="0.1" oninput="updateTriangle()">
+</div>
+
+<div class="input-group">
+  <label for="tB">Vinkel B (°)</label>
+  <input id="tB" placeholder="vinkel B" type="number" step="0.1">
+</div>
 
 <div class="result">
-a: <span id="ra"></span><br>
-b: <span id="rb"></span><br>
-c: <span id="rc"></span><br>
-A: <span id="rA"></span><br>
-B: <span id="rB"></span>
+a: <span id="ra">-</span><br>
+b: <span id="rb">-</span><br>
+c: <span id="rc">-</span><br>
+A: <span id="rA">-</span><br>
+B: <span id="rB">-</span>
 </div>
-  
-<canvas id="triCanvas" width="320" height="300" style="background:white;margin-top:10px;border-radius:4px;"></canvas>
+</div>
+
+<!-- ANILAM -->
+<div id="anilam" class="hide">
+
+<div class="code-tabs">
+  <button onclick="switchAnilam('v')" style="background: #0366d6; color: white;">V-Koder</button>
+  <button onclick="switchAnilam('gm')" style="background: #f0f0f0; color: black;">G/M-Koder</button>
+  <button onclick="switchAnilam('aux')" style="background: #f0f0f0; color: black;">AUX</button>
+</div>
+
+<div id="vSection">
+  <div class="input-group">
+    <label for="searchV">Søg V-kode</label>
+    <input id="searchV" placeholder="Søg..." onkeyup="showVCodes()">
+  </div>
+  <div id="vlist"></div>
+</div>
+
+<div id="gmSection" class="hide">
+  <div class="input-group">
+    <label for="searchGMA">Søg G/M-kode</label>
+    <input id="searchGMA" placeholder="Søg..." onkeyup="showGMCodes()">
+  </div>
+  <div id="gmlist"></div>
+</div>
+
+<div id="auxSection" class="hide">
+  <div class="input-group">
+    <label for="searchAux">Søg AUX-kode</label>
+    <input id="searchAux" placeholder="Søg..." onkeyup="showAuxCodes()">
+  </div>
+  <div id="auxlist"></div>
+</div>
+
+<div id="anilam-detail" class="result"></div>
 
 </div>
 
@@ -103,131 +482,352 @@ B: <span id="rB"></span>
 
 <script>
 
-// ---------------- CALC ----------------
-setInterval(()=>{
-let d=+diameter.value;
-let v=+vc.value;
-let z=+teeth.value;
-let fzv=+fz.value;
+// FANUC - G KODER (Komplet liste)
+const gCodes = [
+  // Hurtig positionering og lineær
+  {code:"G00",desc:"Rapid",detail:"Hurtig positionering"},
+  {code:"G01",desc:"Lineær",detail:"Feed - lineær bevægelse"},
+  
+  // Cirkulær interpolation
+  {code:"G02",desc:"Cirkulær CW",detail:"Med uret"},
+  {code:"G03",desc:"Cirkulær CCW",detail:"Mod uret"},
+  
+  // Plane og koordinatsystem
+  {code:"G17",desc:"X-Y plan",detail:"Planvalg"},
+  {code:"G18",desc:"Z-X plan",detail:"Planvalg"},
+  {code:"G19",desc:"Y-Z plan",detail:"Planvalg"},
+  
+  // Enheder
+  {code:"G20",desc:"Inches",detail:"Tommer"},
+  {code:"G21",desc:"Millimeter",detail:"Metrisk"},
+  
+  // Dwell og hjem
+  {code:"G04",desc:"Dwell",detail:"Pause/ventetid"},
+  {code:"G28",desc:"Hjem position",detail:"Vendt til hjem"},
+  {code:"G30",desc:"2. hjem",detail:"Anden hjem position"},
+  
+  // Radius kompensation
+  {code:"G40",desc:"Cancel radius comp",detail:"Sluk radius komp"},
+  {code:"G41",desc:"Radius komp venstre",detail:"Venstre side"},
+  {code:"G42",desc:"Radius komp højre",detail:"Højre side"},
+  
+  // Værktøj længde kompensation
+  {code:"G43",desc:"Tool length +",detail:"Værktøj længde +"},
+  {code:"G44",desc:"Tool length -",detail:"Værktøj længde -"},
+  {code:"G49",desc:"Cancel tool comp",detail:"Sluk værktøj komp"},
+  
+  // Hullecyklusser
+  {code:"G80",desc:"Cancel cycle",detail:"Sluk cyklus"},
+  {code:"G81",desc:"Boring",detail:"Borecyklus"},
+  {code:"G82",desc:"Boring med dwell",detail:"Boring med pause"},
+  {code:"G83",desc:"Peck boring",detail:"Tryk boring\n\nParametre:\nX = Hulmens koordinat (Valgfrit)\nY = Hulmens koordinat (Valgfrit)\nZ = Dybde af hullet\nR = Tilbagetræksværdi\nP = Pausetid ved hullets bund\nQ = Dybde af hver tryk\nF = Fremføringshastighed"},
+  {code:"G84",desc:"Tapping",detail:"Gevindskæring"},
+  {code:"G85",desc:"Boring finishing",detail:"Præcisions boring"},
+  
+  // Programmering
+  {code:"G90",desc:"Absolut",detail:"Absolut koordinater"},
+  {code:"G91",desc:"Inkremental",detail:"Relative koordinater"},
+  
+  // Feed type
+  {code:"G94",desc:"Feed/min",detail:"Fremførsel pr minut"},
+  {code:"G95",desc:"Feed/rpm",detail:"Fremførsel pr omdrejning"},
+  
+  // Thread cutting
+  {code:"G33",desc:"Thread cut",detail:"Gevindskæring"},
+  
+  // Koordinatsystem
+  {code:"G53",desc:"Maskine koord",detail:"Machine coordinates"},
+  {code:"G54",desc:"Work offset 1",detail:"Arbejdskoordinat 1"},
+  {code:"G55",desc:"Work offset 2",detail:"Arbejdskoordinat 2"},
+  {code:"G56",desc:"Work offset 3",detail:"Arbejdskoordinat 3"},
+  {code:"G57",desc:"Work offset 4",detail:"Arbejdskoordinat 4"},
+  {code:"G58",desc:"Work offset 5",detail:"Arbejdskoordinat 5"},
+  {code:"G59",desc:"Work offset 6",detail:"Arbejdskoordinat 6"},
+  
+  // Canned cycle returns
+  {code:"G98",desc:"Return initial",detail:"Vendt til startpunkt"},
+  {code:"G99",desc:"Return reference",detail:"Vendt til referencepunkt"},
+  
+  // Yderligere G-koder
+  {code:"G10",desc:"Parameter setting",detail:"Parameter indstilling"},
+  {code:"G96",desc:"Constant speed",detail:"Konstant overfladehastighed"},
+  {code:"G97",desc:"Spindle RPM",detail:"Spindel omdrejninger"}
+];
 
-if(d && v){
-let rpm=Math.round((v*1000)/(Math.PI*d));
-let feed=Math.round(rpm*z*fzv);
+// FANUC - M KODER (Komplet liste)
+const mCodes = [
+  // Spindle
+  {code:"M03",desc:"Spindle ON CW",detail:"Spindel med uret"},
+  {code:"M04",desc:"Spindle ON CCW",detail:"Spindel mod uret"},
+  {code:"M05",desc:"Spindle STOP",detail:"Spindel stop"},
+  
+  // Program control
+  {code:"M00",desc:"Program stop",detail:"Program pause"},
+  {code:"M01",desc:"Optional stop",detail:"Betinget pause"},
+  {code:"M02",desc:"Program end",detail:"Program slutning"},
+  {code:"M30",desc:"Program end rewind",detail:"Program slutning + genstart"},
+  
+  // Tool change
+  {code:"M06",desc:"Tool change",detail:"Værktøj skift"},
+  
+  // Coolant
+  {code:"M08",desc:"Coolant ON",detail:"Kølevæske til"},
+  {code:"M09",desc:"Coolant OFF",detail:"Kølevæske fra"},
+  
+  // Chuck (lathe)
+  {code:"M10",desc:"Chuck clamp",detail:"Spændebakke lukket"},
+  {code:"M11",desc:"Chuck unclamp",detail:"Spændebakke åben"},
+  
+  // Tailstock (lathe)
+  {code:"M17",desc:"Tailstock advance",detail:"Løbespids fremad"},
+  {code:"M18",desc:"Tailstock retract",detail:"Løbespids tilbage"},
+  {code:"M21",desc:"Tailstock forward",detail:"Løbespids fremad"},
+  {code:"M22",desc:"Tailstock backward",detail:"Løbespids tilbage"},
+  
+  // Spindle orientation
+  {code:"M19",desc:"Spindle orient",detail:"Spindel orientering"},
+  
+  // Gear ranges
+  {code:"M41",desc:"Gear low",detail:"Gear lav"},
+  {code:"M42",desc:"Gear high",detail:"Gear høj"},
+  {code:"M43",desc:"Gear range 3",detail:"Gear område 3"},
+  {code:"M44",desc:"Gear range 4",detail:"Gear område 4"},
+  {code:"M45",desc:"Gear range 5",detail:"Gear område 5"}
+];
 
-rpmSpan=rpm;
-document.getElementById("rpm").innerText=rpm;
-document.getElementById("feed").innerText=feed;
+function switchCodeTab(tab) {
+  if(tab === 'g') {
+    document.getElementById('gSection').classList.remove('hide');
+    document.getElementById('mSection').classList.add('hide');
+    showGCodes();
+  } else {
+    document.getElementById('gSection').classList.add('hide');
+    document.getElementById('mSection').classList.remove('hide');
+    showMCodes();
+  }
 }
-},200);
 
-// ---------------- ZERO ----------------
+function showGCodes(){
+  let s=searchG.value.toUpperCase();
+  glist.innerHTML="";
+  gCodes.forEach(g=>{
+    if(s && !g.code.toUpperCase().includes(s) && !g.desc.toUpperCase().includes(s) && !g.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=g.code+" - "+g.desc;
+    d.onclick=()=>codedetail.innerText=g.code+"\n"+g.desc+"\n"+g.detail;
+    glist.appendChild(d);
+  });
+}
+
+function showMCodes(){
+  let s=searchM.value.toUpperCase();
+  mlist.innerHTML="";
+  mCodes.forEach(m=>{
+    if(s && !m.code.toUpperCase().includes(s) && !m.desc.toUpperCase().includes(s) && !m.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=m.code+" - "+m.desc;
+    d.onclick=()=>codedetail.innerText=m.code+"\n"+m.desc+"\n"+m.detail;
+    mlist.appendChild(d);
+  });
+}
+
+// ANILAM - V KODER
+const vCodes = [
+  {code:"V00",desc:"Program start",detail:"Starter program"},
+  {code:"V01",desc:"Samme position",detail:"Gentag sidste position"},
+  {code:"V02",desc:"X data",detail:"X position"},
+  {code:"V03",desc:"Y data",detail:"Y position"},
+  {code:"V04",desc:"Z data",detail:"Z position"},
+  {code:"V05",desc:"Feedrate",detail:"Indstil fremføring"},
+  {code:"V06",desc:"Tool call",detail:"Værktøj valg"},
+  {code:"V07",desc:"Tool offset",detail:"Korriger værktøj"},
+  {code:"V08",desc:"Radius comp",detail:"Radius kompensation"},
+  {code:"V09",desc:"Cancel comp",detail:"Fjern kompensation"}
+];
+
+// ANILAM - G/M KODER
+const gmAnilamCodes = [
+  {code:"G00",desc:"Rapid move",detail:"Hurtig positionering"},
+  {code:"G01",desc:"Lineær interpolation",detail:"Fremføring"},
+  {code:"G02",desc:"Cirkulær CW",detail:"Med uret"},
+  {code:"G03",desc:"Cirkulær CCW",detail:"Mod uret"},
+  {code:"M00",desc:"Stop",detail:"Program stop"},
+  {code:"M03",desc:"Spindel CW",detail:"Med uret"},
+  {code:"M04",desc:"Spindel CCW",detail:"Mod uret"},
+  {code:"M05",desc:"Spindel stop",detail:"Stop spindel"},
+  {code:"M06",desc:"Tool change",detail:"Værktøj skift"},
+  {code:"M08",desc:"Kølervæske ON",detail:"Tænd kølevæske"},
+  {code:"M09",desc:"Kølervæske OFF",detail:"Sluk kølevæske"},
+  {code:"M30",desc:"Program slut",detail:"Reset og stop"}
+];
+
+// ANILAM - AUX KODER
+const auxCodes = [
+  {code:"AUX 0001",desc:"Reset",detail:"Nulstil system"},
+  {code:"AUX 0002",desc:"Pause",detail:"Midlertidig stop"},
+  {code:"AUX 0003",desc:"Spindel start",detail:"Start spindel"},
+  {code:"AUX 0004",desc:"Spindel stop",detail:"Stop spindel"},
+  {code:"AUX 0005",desc:"Coolant",detail:"Kølervæske styring"}
+];
+
+function switchAnilam(tab) {
+  if(tab === 'v') {
+    document.getElementById('vSection').classList.remove('hide');
+    document.getElementById('gmSection').classList.add('hide');
+    document.getElementById('auxSection').classList.add('hide');
+    showVCodes();
+  } else if(tab === 'gm') {
+    document.getElementById('vSection').classList.add('hide');
+    document.getElementById('gmSection').classList.remove('hide');
+    document.getElementById('auxSection').classList.add('hide');
+    showGMCodes();
+  } else {
+    document.getElementById('vSection').classList.add('hide');
+    document.getElementById('gmSection').classList.add('hide');
+    document.getElementById('auxSection').classList.remove('hide');
+    showAuxCodes();
+  }
+}
+
+function showVCodes(){
+  let s=searchV.value.toUpperCase();
+  vlist.innerHTML="";
+  vCodes.forEach(v=>{
+    if(s && !v.code.toUpperCase().includes(s) && !v.desc.toUpperCase().includes(s) && !v.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=v.code+" - "+v.desc;
+    d.onclick=()=>document.getElementById('anilam-detail').innerText=v.code+"\n"+v.desc+"\n"+v.detail;
+    vlist.appendChild(d);
+  });
+}
+
+function showGMCodes(){
+  let s=searchGMA.value.toUpperCase();
+  gmlist.innerHTML="";
+  gmAnilamCodes.forEach(gm=>{
+    if(s && !gm.code.toUpperCase().includes(s) && !gm.desc.toUpperCase().includes(s) && !gm.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=gm.code+" - "+gm.desc;
+    d.onclick=()=>document.getElementById('anilam-detail').innerText=gm.code+"\n"+gm.desc+"\n"+gm.detail;
+    gmlist.appendChild(d);
+  });
+}
+
+function showAuxCodes(){
+  let s=searchAux.value.toUpperCase();
+  auxlist.innerHTML="";
+  auxCodes.forEach(aux=>{
+    if(s && !aux.code.toUpperCase().includes(s) && !aux.desc.toUpperCase().includes(s) && !aux.detail.toUpperCase().includes(s)) return;
+    let d=document.createElement("div");
+    d.className="code";
+    d.innerText=aux.code+" - "+aux.desc;
+    d.onclick=()=>document.getElementById('anilam-detail').innerText=aux.code+"\n"+aux.desc+"\n"+aux.detail;
+    auxlist.appendChild(d);
+  });
+}
+
+// CALC
+const vcTable={rustfri:{HM:80,HSS:20},alu:{HM:300,HSS:80},jern:{HM:120,HSS:25}};
+function updateVC(){vc.value=vcTable[material.value][tool.value];}
+
+// CALC - Real-time RPM/Feed update
+function updateCalc(){
+  let d=+diameter.value;
+  let v=+vc.value;
+  let z=+teeth.value;
+  let fzv=+fz.value;
+  
+  if(d&&v){
+    let rpm=Math.round((v*1000)/(Math.PI*d));
+    let feed=Math.round(rpm*z*fzv);
+    document.getElementById("rpm").innerText=rpm;
+    document.getElementById("feed").innerText=feed;
+  }
+}
+
+// ZERO - Calculate zero offset
 function calcZero(){
-
-if(m1.value==="" || m2.value==="") return;
-
-let v1=parseFloat(m1.value);
-let v2=parseFloat(m2.value);
-
-let res=((v1+v2)/2).toFixed(3);
-zeroRes.innerText=res;
-
-let div=document.createElement("div");
-div.innerText=`${v1}+${v2}=${res}`;
-zeroHistory.prepend(div);
-
-if(zeroHistory.children.length>10){
-zeroHistory.removeChild(zeroHistory.lastChild);
+  if(m1.value === "" || m2.value === "") return;
+  
+  let v1 = parseFloat(m1.value);
+  let v2 = parseFloat(m2.value);
+  
+  if(isNaN(v1) || isNaN(v2)) return;
+  
+  let res = ((v1 + v2)/2).toFixed(3);
+  zeroRes.innerText = res;
+  
+  let current = `${v1} + ${v2} = ${res}`;
+  
+  let item = document.createElement("div");
+  item.className = "history-item";
+  item.innerText = current;
+  
+  zeroHistory.prepend(item);
+  
+  if(zeroHistory.children.length > 10){
+    zeroHistory.removeChild(zeroHistory.lastChild);
+  }
 }
-}
 
-// ---------------- TREKANT ----------------
+// TRIANGLE - Calculate triangle values
 function updateTriangle(){
-
-let a=parseFloat(ta.value);
-let b=parseFloat(tb.value);
-let c=parseFloat(tc.value);
-let A=parseFloat(tA.value);
-
-// reset
-ra.innerText="-";
-rb.innerText="-";
-rc.innerText="-";
-rA.innerText="-";
-rB.innerText="-";
-
-// beregninger
-if(a && b && !c){
-c=Math.sqrt(a*a+b*b);
-rc.innerText=c.toFixed(3);
+  let a=parseFloat(ta.value);
+  let b=parseFloat(tb.value);
+  let c=parseFloat(tc.value);
+  let A=parseFloat(tA.value);
+  
+  // Pythagoras
+  if(a&&b&&!c){rc.innerText=Math.sqrt(a*a+b*b).toFixed(3);}
+  if(b&&c&&!a){ra.innerText=Math.sqrt(c*c-b*b).toFixed(3);}
+  if(a&&c&&!b){rb.innerText=Math.sqrt(c*c-a*a).toFixed(3);}
+  
+  // vinkler
+  if(a&&b){
+    let AA=Math.atan(a/b)*(180/Math.PI);
+    rA.innerText=AA.toFixed(2);
+    rB.innerText=(90-AA).toFixed(2);
+  }
+  
+  if(c&&A&&!a){
+    let rad=A*Math.PI/180;
+    ra.innerText=(Math.sin(rad)*c).toFixed(3);
+    rb.innerText=(Math.cos(rad)*c).toFixed(3);
+  }
 }
 
-if(a && b){
-let AA=Math.atan(a/b)*(180/Math.PI);
-rA.innerText=AA.toFixed(2);
-rB.innerText=(90-AA).toFixed(2);
+// Add event listeners for live updates
+document.getElementById('diameter').addEventListener('input', updateCalc);
+document.getElementById('vc').addEventListener('input', updateCalc);
+document.getElementById('teeth').addEventListener('input', updateCalc);
+document.getElementById('fz').addEventListener('input', updateCalc);
+
+// TABS
+function showTab(t){
+  ["calc","zero","g","anilam","tri"].forEach(id=>{
+    document.getElementById(id).classList.toggle("hide",id!==t);
+  });
+  if(t==="g") switchCodeTab('g');
+  if(t==="anilam") switchAnilam('v');
 }
 
-if(c && A){
-let rad=A*Math.PI/180;
-a=Math.sin(rad)*c;
-b=Math.cos(rad)*c;
-ra.innerText=a.toFixed(3);
-rb.innerText=b.toFixed(3);
+// INIT
+updateVC();
+updateCalc();
+showGCodes();
+  
+// PWA INSTALL
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").catch(err => {
+    console.log("Service Worker registration failed:", err);
+  });
 }
 
-// tegn hvis klar
-if(a && b && c){
-drawTriangle(a,b,c);
-}
-}
-
-  function drawTriangle(a,b,c){
-
-let canvas=document.getElementById("triCanvas");
-if(!canvas) return;
-
-let ctx=canvas.getContext("2d");
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-// vinkler
-let A=Math.acos((b*b+c*c-a*a)/(2*b*c))*180/Math.PI;
-let B=Math.acos((a*a+c*c-b*b)/(2*a*c))*180/Math.PI;
-let C=180-A-B;
-
-// scale
-let scale=180/Math.max(a,b,c);
-
-// punkter
-let x1=60,y1=250;
-let x2=x1+b*scale,y2=y1;
-let x3=x1+Math.cos(C*Math.PI/180)*c*scale;
-let y3=y1-Math.sin(C*Math.PI/180)*c*scale;
-
-// tegn
-ctx.beginPath();
-ctx.moveTo(x1,y1);
-ctx.lineTo(x2,y2);
-ctx.lineTo(x3,y3);
-ctx.closePath();
-
-ctx.strokeStyle="#0366d6";
-ctx.lineWidth=2;
-ctx.stroke();
-
-// tekst sider
-ctx.fillStyle="black";
-ctx.font="12px Arial";
-
-ctx.fillText(`a=${a.toFixed(1)}`, (x2+x3)/2,(y2+y3)/2);
-ctx.fillText(`b=${b.toFixed(1)}`, (x1+x2)/2,y1+15);
-ctx.fillText(`c=${c.toFixed(1)}`, (x1+x3)/2,(y1+y3)/2);
-
-// vinkler
-ctx.fillStyle="red";
-ctx.fillText(A.toFixed(1)+"°",x1-20,y1-10);
-ctx.fillText(B.toFixed(1)+"°",x2+5,y2);
-ctx.fillText(C.toFixed(1)+"°",x3,y3);
-}
 </script>
+
 </body>
 </html>
