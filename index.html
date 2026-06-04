@@ -140,12 +140,218 @@ zeroHistory.removeChild(zeroHistory.lastChild);
 }
 
 // ---------------- G CODES ----------------
-const gCodes=[
-{code:"G00",desc:"Rapid"},
-{code:"G01",desc:"Lineær"},
-{code:"G02",desc:"Cirkulær CW"},
-{code:"G03",desc:"Cirkulær CCW"}
+const gCodes = [
+
+{
+code:"G00",
+desc:"Rapid",
+detail:`Hurtig positionering
+
+Parametre:
+X = X position
+Y = Y position
+Z = Z position
+
+Eksempel:
+G00 X100 Y50`
+},
+
+{
+code:"G01",
+desc:"Lineær",
+detail:`Feed bevægelse
+
+Parametre:
+X,Y,Z = Position
+F = Feedrate
+
+Eksempel:
+G01 X50 Y0 F200`
+},
+
+{
+code:"G02",
+desc:"Cirkulær CW",
+detail:`Cirkel med uret
+
+Parametre:
+X,Y = Slutpunkt
+I,J = Center offset
+F = Feed
+
+Eksempel:
+G02 X50 Y0 I25 J0`
+},
+
+{
+code:"G03",
+desc:"Cirkulær CCW",
+detail:`Cirkel mod uret
+
+Parametre:
+X,Y = Slutpunkt
+I,J = Center offset
+F = Feed`
+},
+
+{
+code:"G04",
+desc:"Dwell",
+detail:`Pause i program
+
+Parametre:
+P = Millisekunder
+
+Eksempel:
+G04 P2000`
+},
+
+{
+code:"G28",
+desc:"Home",
+detail:`Retur til maskine nul
+
+Parametre:
+X,Y,Z = akser
+
+Eksempel:
+G28 Z0`
+},
+
+{
+code:"G40",
+desc:"Cancel radius",
+detail:`Afbryd radius kompensation`
+},
+
+{
+code:"G41",
+desc:"Radius venstre",
+detail:`Værktøjs kompensation venstre
+
+Parametre:
+D = Radius offset nummer`
+},
+
+{
+code:"G42",
+desc:"Radius højre",
+detail:`Værktøjs kompensation højre
+
+Parametre:
+D = Radius offset`
+},
+
+{
+code:"G43",
+desc:"Tool length +",
+detail:`Værktøjs længde kompensation
+
+Parametre:
+H = Offset nummer
+Z = Position`
+},
+
+{
+code:"G49",
+desc:"Cancel tool length",
+detail:`Sluk længde komp`
+},
+
+{
+code:"G53",
+desc:"Machine coord",
+detail:`Bevægelse i maskinens koordinatsystem
+
+Parametre:
+X,Y,Z = maskinposition`
+},
+
+{
+code:"G54",
+desc:"Work offset",
+detail:`Arbejdskoordinat
+
+Bruges som reference offset`
+},
+
+{
+code:"G81",
+desc:"Boring",
+detail:`Standard bore cyklus
+
+Parametre:
+X,Y = position
+Z = dybde
+R = sikker højde
+F = feed
+
+Eksempel:
+G81 X20 Y20 Z-10 R2 F150`
+},
+
+{
+code:"G82",
+desc:"Boring dwell",
+detail:`Boring med pause i bund
+
+Parametre:
+X,Y,Z,R,F
+P = dwell tid`
+},
+
+{
+code:"G83",
+desc:"Peck boring",
+detail:`Trin boring
+
+Parametre:
+X,Y,Z = position/dybde
+R = retrakt plan
+Q = step dybde
+F = feed
+
+Eksempel:
+G83 Z-20 Q5 R2`
+},
+
+{
+code:"G84",
+desc:"Tapping",
+detail:`Gevind cyklus
+
+Parametre:
+X,Y,Z = position
+R = start plan
+F = pitch (meget vigtigt!)`
+},
+
+{
+code:"G90",
+desc:"Absolut",
+detail:`Absolut koordinater`
+},
+
+{
+code:"G91",
+desc:"Inkremental",
+detail:`Relativ bevægelse`
+},
+
+{
+code:"G94",
+desc:"Feed/min",
+detail:`F pr minut`
+},
+
+{
+code:"G95",
+desc:"Feed/rev",
+detail:`F pr omdrejning`
+}
+
 ];
+
 
 function showGCodes(){
 let s=searchG.value.toUpperCase();
