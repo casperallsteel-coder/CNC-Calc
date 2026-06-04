@@ -850,42 +850,32 @@ if ("serviceWorker" in navigator) {
 }
 function drawTriangle(a,b,c){
 
-let canvas=document.getElementById("triCanvas");
+let canvas = document.getElementById("triCanvas");
 if(!canvas) return;
 
-let ctx=canvas.getContext("2d");
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-// vinkler
-let A=Math.acos((b*b+c*c-a*a)/(2*b*c))*180/Math.PI;
-let B=Math.acos((a*a+c*c-b*b)/(2*a*c))*180/Math.PI;
-let C=180-A-B;
-
-// scale
-let scale=180/Math.max(a,b,c);
-
-// punkter
-let x1=60,y1=250;
-let x2=x1+b*scale,y2=y1;
-let x3=x1+Math.cos(C*Math.PI/180)*c*scale;
-let y3=y1-Math.sin(C*Math.PI/180)*c*scale;
-
-// tegn
-function drawTriangle(a,b,c){
-
-let canvas = document.getElementById("triCanvas");
 let ctx = canvas.getContext("2d");
-
 ctx.clearRect(0,0,canvas.width,canvas.height);
 
-// --- scale ---
-let max = Math.max(a,b,c);
-let scale = 200 / max;
+// --- padding & størrelse ---
+let padding = 40;
+let maxWidth = canvas.width - padding*2;
+let maxHeight = canvas.height - padding*2;
 
-// --- punkter (retvinklet korrekt) ---
-let x1 = 60, y1 = 250;          // nederste venstre
-let x2 = x1 + b*scale, y2 = y1; // bund
-let x3 = x1, y3 = y1 - a*scale; // lodret
+// --- korrekt scale (passer både højde og bredde) ---
+let scale = Math.min(
+  maxWidth / b,
+  maxHeight / a
+);
+
+// --- placering ---
+let x1 = (canvas.width - b*scale)/2;
+let y1 = canvas.height - padding;
+
+let x2 = x1 + b*scale;
+let y2 = y1;
+
+let x3 = x1;
+let y3 = y1 - a*scale;
 
 // --- tegn trekant ---
 ctx.beginPath();
@@ -903,12 +893,15 @@ let A = Math.atan(a/b)*(180/Math.PI);
 let B = 90 - A;
 let C = 90;
 
-// --- labels sider ---
-// b
+// --- sides labels ---
+ctx.fillStyle="black";
+ctx.font="12px Arial";
+
+// b (bund)
 ctx.fillText(`b=${b.toFixed(1)}`, (x1+x2)/2, y1+15);
 
-// a
-ctx.fillText(`a=${a.toFixed(1)}`, x1-30, (y1+y3)/2);
+// a (lodret)
+ctx.fillText(`a=${a.toFixed(1)}`, x1-35, (y1+y3)/2);
 
 // c (hypotenuse)
 ctx.fillText(`c=${c.toFixed(1)}`, (x2+x3)/2, (y2+y3)/2);
@@ -916,13 +909,17 @@ ctx.fillText(`c=${c.toFixed(1)}`, (x2+x3)/2, (y2+y3)/2);
 // --- vinkler ---
 ctx.fillStyle="red";
 
-// ret vinkel
+// C (ret vinkel)
 ctx.fillText(`${C.toFixed(0)}°`, x1-25, y1-5);
 
 // B
 ctx.fillText(`${B.toFixed(1)}°`, x2+5, y2);
 
 // A
+ctx.fillText(`${A.toFixed(1)}°`, x3, y3-5);
+
+ctx.fillStyle="black";
+}
 
 </script>
 
