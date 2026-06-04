@@ -94,8 +94,8 @@ c: <span id="rc"></span><br>
 A: <span id="rA"></span><br>
 B: <span id="rB"></span>
 </div>
-
-<canvas id="triCanvas" width="320" height="300"></canvas>
+  
+<canvas id="triCanvas" width="320" height="300" style="background:white;margin-top:10px;border-radius:4px;"></canvas>
 
 </div>
 
@@ -181,12 +181,12 @@ drawTriangle(a,b,c);
 }
 }
 
-// ---------------- DRAW ----------------
-function drawTriangle(a,b,c){
+  function drawTriangle(a,b,c){
 
 let canvas=document.getElementById("triCanvas");
-let ctx=canvas.getContext("2d");
+if(!canvas) return;
 
+let ctx=canvas.getContext("2d");
 ctx.clearRect(0,0,canvas.width,canvas.height);
 
 // vinkler
@@ -199,11 +199,9 @@ let scale=180/Math.max(a,b,c);
 
 // punkter
 let x1=60,y1=250;
-let x2=x1+b*scale, y2=y1;
-
-let angleC=C*Math.PI/180;
-let x3=x1+Math.cos(angleC)*c*scale;
-let y3=y1-Math.sin(angleC)*c*scale;
+let x2=x1+b*scale,y2=y1;
+let x3=x1+Math.cos(C*Math.PI/180)*c*scale;
+let y3=y1-Math.sin(C*Math.PI/180)*c*scale;
 
 // tegn
 ctx.beginPath();
@@ -211,9 +209,15 @@ ctx.moveTo(x1,y1);
 ctx.lineTo(x2,y2);
 ctx.lineTo(x3,y3);
 ctx.closePath();
+
+ctx.strokeStyle="#0366d6";
+ctx.lineWidth=2;
 ctx.stroke();
 
-// labels
+// tekst sider
+ctx.fillStyle="black";
+ctx.font="12px Arial";
+
 ctx.fillText(`a=${a.toFixed(1)}`, (x2+x3)/2,(y2+y3)/2);
 ctx.fillText(`b=${b.toFixed(1)}`, (x1+x2)/2,y1+15);
 ctx.fillText(`c=${c.toFixed(1)}`, (x1+x3)/2,(y1+y3)/2);
@@ -222,19 +226,8 @@ ctx.fillText(`c=${c.toFixed(1)}`, (x1+x3)/2,(y1+y3)/2);
 ctx.fillStyle="red";
 ctx.fillText(A.toFixed(1)+"°",x1-20,y1-10);
 ctx.fillText(B.toFixed(1)+"°",x2+5,y2);
-ctx.fillText(C.toFixed(1)+"°",x3,y3-5);
-
-ctx.fillStyle="black";
+ctx.fillText(C.toFixed(1)+"°",x3,y3);
 }
-
-// ---------------- TABS ----------------
-function showTab(t){
-["calc","zero","tri"].forEach(id=>{
-document.getElementById(id).classList.toggle("hide",id!==t);
-});
-}
-
 </script>
-
 </body>
 </html>
