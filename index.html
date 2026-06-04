@@ -783,28 +783,40 @@ function updateTriangle(){
   let A=parseFloat(tA.value);
   
   // Pythagoras
-  if(a&&b&&!c){rc.innerText=Math.sqrt(a*a+b*b).toFixed(3);}
-  if(b&&c&&!a){ra.innerText=Math.sqrt(c*c-b*b).toFixed(3);}
-  if(a&&c&&!b){rb.innerText=Math.sqrt(c*c-a*a).toFixed(3);}
-  
+  if(a && b && !c){
+    c = Math.sqrt(a*a+b*b);
+    rc.innerText = c.toFixed(3);
+  }
+
+  if(b && c && !a){
+    a = Math.sqrt(c*c-b*b);
+    ra.innerText = a.toFixed(3);
+  }
+
+  if(a && c && !b){
+    b = Math.sqrt(c*c-a*a);
+    rb.innerText = b.toFixed(3);
+  }
   
   // vinkler
-  if(a&&b){
+  if(a && b){
     let AA=Math.atan(a/b)*(180/Math.PI);
     rA.innerText=AA.toFixed(2);
     rB.innerText=(90-AA).toFixed(2);
   }
   
-  if(c&&A&&!a){
+  if(c && A && !a){
     let rad=A*Math.PI/180;
-    ra.innerText=(Math.sin(rad)*c).toFixed(3);
-    rb.innerText=(Math.cos(rad)*c).toFixed(3);
-  }
-  
-if(a && b && c){
-    drawTriangle(a,b,c);
+    a=Math.sin(rad)*c;
+    b=Math.cos(rad)*c;
+    ra.innerText=a.toFixed(3);
+    rb.innerText=b.toFixed(3);
   }
 
+  // ✅ nu virker den!
+  if(a && b && c){
+    drawTriangle(a,b,c);
+  }
 }
 
 // Add event listeners for live updates
