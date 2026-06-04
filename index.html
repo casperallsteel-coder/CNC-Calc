@@ -12,29 +12,13 @@
 body {font-family:Arial; margin:0; background:#f5f5f5;}
 .header {background:#0366d6; color:white; padding:10px; text-align:center;}
 .container {max-width:500px; margin:auto; padding:10px;}
-
 .tabs {display:flex; gap:5px; margin-bottom:10px;}
 button {flex:1; padding:10px;}
-
-input,select {
-  width:100%;
-  padding:10px;
-  margin-bottom:8px;
-  box-sizing:border-box;
-}
-
-.result {
-  background:#eee;
-  padding:10px;
-}
-
+input,select {width:100%; padding:10px; margin-bottom:8px;}
+.result {background:#eee; padding:10px;}
 .hide {display:none;}
-
-canvas {
-  background:white;
-  margin-top:10px;
-  border-radius:4px;
-}
+.code {padding:8px; border-bottom:1px solid #ddd; cursor:pointer;}
+canvas {background:white; margin-top:10px; border-radius:4px;}
 </style>
 </head>
 
@@ -49,6 +33,8 @@ canvas {
 <div class="tabs">
 <button onclick="showTab('calc')">Calc</button>
 <button onclick="showTab('zero')">Zero</button>
+<button onclick="showTab('g')">G/M</button>
+<button onclick="showTab('anilam')">Anilam</button>
 <button onclick="showTab('tri')">Trekant</button>
 </div>
 
@@ -77,6 +63,20 @@ Nul: <span id="zeroRes"></span>
 </div>
 
 <div id="zeroHistory"></div>
+</div>
+
+<!-- G/M -->
+<div id="g" class="hide">
+<input id="searchG" placeholder="Søg..." onkeyup="showGCodes()">
+<div id="glist"></div>
+<div id="gdetail" class="result"></div>
+</div>
+
+<!-- ANILAM -->
+<div id="anilam" class="hide">
+<input id="searchA" placeholder="Søg..." onkeyup="showAnilam()">
+<div id="alist"></div>
+<div id="adetail" class="result"></div>
 </div>
 
 <!-- TREKANT -->
@@ -114,7 +114,6 @@ if(d && v){
 let rpm=Math.round((v*1000)/(Math.PI*d));
 let feed=Math.round(rpm*z*fzv);
 
-rpmSpan=rpm;
 document.getElementById("rpm").innerText=rpm;
 document.getElementById("feed").innerText=feed;
 }
@@ -123,7 +122,7 @@ document.getElementById("feed").innerText=feed;
 // ---------------- ZERO ----------------
 function calcZero(){
 
-if(m1.value==="" || m2.value==="") return;
+if(m1.value===""||m2.value==="") return;
 
 let v1=parseFloat(m1.value);
 let v2=parseFloat(m2.value);
@@ -140,6 +139,47 @@ zeroHistory.removeChild(zeroHistory.lastChild);
 }
 }
 
+// ---------------- G CODES ----------------
+const gCodes=[
+{code:"G00",desc:"Rapid"},
+{code:"G01",desc:"Lineær"},
+{code:"G02",desc:"Cirkulær CW"},
+{code:"G03",desc:"Cirkulær CCW"}
+];
+
+function showGCodes(){
+let s=searchG.value.toUpperCase();
+glist.innerHTML="";
+gCodes.forEach(g=>{
+if(s && !g.code.includes(s) && !g.desc.toUpperCase().includes(s)) return;
+let d=document.createElement("div");
+d.className="code";
+d.innerText=g.code+" - "+g.desc;
+d.onclick=()=>gdetail.innerText=g.code+" "+g.desc;
+glist.appendChild(d);
+});
+}
+
+// ---------------- ANILAM ----------------
+const anilam=[
+{code:"V02",desc:"X"},
+{code:"V03",desc:"Y"},
+{code:"AUX 0003",desc:"Spindel start"}
+];
+
+function showAnilam(){
+let s=searchA.value.toUpperCase();
+alist.innerHTML="";
+anilam.forEach(a=>{
+if(s && !a.code.includes(s)) return;
+let d=document.createElement("div");
+d.className="code";
+d.innerText=a.code+" - "+a.desc;
+d.onclick=()=>adetail.innerText=a.code+" "+a.desc;
+alist.appendChild(d);
+});
+}
+
 // ---------------- TREKANT ----------------
 function updateTriangle(){
 
@@ -149,11 +189,7 @@ let c=parseFloat(tc.value);
 let A=parseFloat(tA.value);
 
 // reset
-ra.innerText="-";
-rb.innerText="-";
-rc.innerText="-";
-rA.innerText="-";
-rB.innerText="-";
+ra.innerText="-"; rb.innerText="-"; rc.innerText="-"; rA.innerText="-"; rB.innerText="-";
 
 // beregninger
 if(a && b && !c){
@@ -175,64 +211,58 @@ ra.innerText=a.toFixed(3);
 rb.innerText=b.toFixed(3);
 }
 
-// tegn hvis klar
+// tegn
 if(a && b && c){
 drawTriangle(a,b,c);
 }
 }
 
-// ---------------- DRAW ----------------
 function drawTriangle(a,b,c){
 
-let canvas=document.getElementById("triCanvas");
-let ctx=canvas.getContext("2d");
+let ctx=document.getElementById("triCanvas").getContext("2d");
+ctx.clearRect(0,0,320,300);
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-// vinkler
 let A=Math.acos((b*b+c*c-a*a)/(2*b*c))*180/Math.PI;
 let B=Math.acos((a*a+c*c-b*b)/(2*a*c))*180/Math.PI;
 let C=180-A-B;
 
-// scale
 let scale=180/Math.max(a,b,c);
 
-// punkter
 let x1=60,y1=250;
-let x2=x1+b*scale, y2=y1;
+let x2=x1+b*scale,y2=y1;
+let x3=x1+Math.cos(C*Math.PI/180)*c*scale;
+let y3=y1-Math.sin(C*Math.PI/180)*c*scale;
 
-let angleC=C*Math.PI/180;
-let x3=x1+Math.cos(angleC)*c*scale;
-let y3=y1-Math.sin(angleC)*c*scale;
-
-// tegn
 ctx.beginPath();
 ctx.moveTo(x1,y1);
 ctx.lineTo(x2,y2);
 ctx.lineTo(x3,y3);
 ctx.closePath();
+ctx.strokeStyle="#0366d6";
+ctx.lineWidth=2;
 ctx.stroke();
 
-// labels
 ctx.fillText(`a=${a.toFixed(1)}`, (x2+x3)/2,(y2+y3)/2);
 ctx.fillText(`b=${b.toFixed(1)}`, (x1+x2)/2,y1+15);
 ctx.fillText(`c=${c.toFixed(1)}`, (x1+x3)/2,(y1+y3)/2);
 
-// vinkler
 ctx.fillStyle="red";
 ctx.fillText(A.toFixed(1)+"°",x1-20,y1-10);
 ctx.fillText(B.toFixed(1)+"°",x2+5,y2);
-ctx.fillText(C.toFixed(1)+"°",x3,y3-5);
-
+ctx.fillText(C.toFixed(1)+"°",x3,y3);
 ctx.fillStyle="black";
 }
 
 // ---------------- TABS ----------------
 function showTab(t){
-["calc","zero","tri"].forEach(id=>{
+["calc","zero","g","anilam","tri"].forEach(id=>{
 document.getElementById(id).classList.toggle("hide",id!==t);
 });
 }
+
+// INIT
+showGCodes();
+showAnilam();
 
 </script>
 
